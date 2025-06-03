@@ -68,6 +68,16 @@
             </div>
             <aside id="analysis-history">
                 <h3>Analysed Tracks</h3>
+                <div id="csv-export-section">
+                    <button id="csv-download-btn" class="ui button disabled" title="Download analysis results as CSV">
+                        <i class="download icon"></i>
+                        Download CSV
+                    </button>
+                    <div id="csv-export-feedback" class="ui message" style="display: none; margin-top: 10px; padding: 8px;">
+                        <i class="icon"></i>
+                        <span class="message-text"></span>
+                    </div>
+                </div>
                 <ul id="track-list"></ul>
             </aside>
         </main>

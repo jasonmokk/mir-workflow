@@ -1,5 +1,7 @@
 import { AnalysisResults, toggleUploadDisplayHTML, PlaybackControls } from './viz.js';
 import { preprocess, shortenAudio } from './audioUtils.js';
+import { generateCSV, downloadCSV, exportCSV, CSV_SCHEMA } from './csvExport.js';
+import './csvExportTest.js';
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioCtx = new AudioContext();
@@ -40,6 +42,146 @@ let isProcessing = false;
 
 let analysedTracks = [];
 let currentAnalysingFile = null;
+
+// CSV Download UI management
+let csvDownloadBtn = null;
+let csvExportFeedback = null;
+
+/**
+ * Generates timestamp-based filename for CSV export
+ * @returns {string} Filename with timestamp
+ */
+function generateCSVFilename() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    
+    return `music_analysis_${year}-${month}-${day}_${hours}${minutes}${seconds}.csv`;
+}
+
+/**
+ * Updates CSV download button state based on available tracks
+ */
+function updateCSVButtonState() {
+    if (!csvDownloadBtn) return;
+    
+    const hasData = analysedTracks.length > 0;
+    
+    if (hasData) {
+        csvDownloadBtn.classList.remove('disabled');
+        csvDownloadBtn.title = `Download CSV with ${analysedTracks.length} track(s)`;
+    } else {
+        csvDownloadBtn.classList.add('disabled');
+        csvDownloadBtn.title = 'No analysis results available';
+    }
+}
+
+/**
+ * Shows feedback message for CSV export
+ * @param {string} type - Message type: 'success', 'error', 'info'
+ * @param {string} message - Message text
+ * @param {number} duration - Duration to show message (ms), 0 for permanent
+ */
+function showCSVFeedback(type, message, duration = 3000) {
+    if (!csvExportFeedback) return;
+    
+    // Clear existing classes and set new type
+    csvExportFeedback.className = `ui message ${type}`;
+    
+    // Set icon based on type
+    const iconElement = csvExportFeedback.querySelector('.icon');
+    const textElement = csvExportFeedback.querySelector('.message-text');
+    
+    switch (type) {
+        case 'success':
+            iconElement.className = 'checkmark icon';
+            break;
+        case 'error':
+            iconElement.className = 'exclamation triangle icon';
+            break;
+        case 'info':
+            iconElement.className = 'info circle icon';
+            break;
+        default:
+            iconElement.className = 'icon';
+    }
+    
+    textElement.textContent = message;
+    csvExportFeedback.style.display = 'block';
+    
+    // Auto-hide after duration (if specified)
+    if (duration > 0) {
+        setTimeout(() => {
+            csvExportFeedback.style.display = 'none';
+        }, duration);
+    }
+}
+
+/**
+ * Handles CSV export button click
+ */
+function handleCSVExport() {
+    if (analysedTracks.length === 0) {
+        showCSVFeedback('error', 'No tracks available for export', 3000);
+        return;
+    }
+    
+    // Show loading state
+    csvDownloadBtn.classList.add('loading');
+    csvDownloadBtn.innerHTML = '<i class="spinner loading icon"></i>Generating CSV...';
+    csvDownloadBtn.disabled = true;
+    
+    showCSVFeedback('info', `Exporting ${analysedTracks.length} track(s)...`, 0);
+    
+    try {
+        // Generate filename with timestamp
+        const filename = generateCSVFilename();
+        
+        // Use the existing CSV export functionality
+        const result = exportCSV(analysedTracks, filename);
+        
+        // Reset button state
+        csvDownloadBtn.classList.remove('loading');
+        csvDownloadBtn.innerHTML = '<i class="download icon"></i>Download CSV';
+        csvDownloadBtn.disabled = false;
+        
+        if (result.success) {
+            showCSVFeedback('success', 
+                `CSV exported successfully! (${result.statistics.processedTracks} tracks)`, 
+                4000);
+        } else {
+            showCSVFeedback('error', 
+                `Export failed: ${result.error || 'Unknown error'}`, 
+                5000);
+        }
+    } catch (error) {
+        console.error('CSV export error:', error);
+        
+        // Reset button state
+        csvDownloadBtn.classList.remove('loading');
+        csvDownloadBtn.innerHTML = '<i class="download icon"></i>Download CSV';
+        csvDownloadBtn.disabled = false;
+        
+        showCSVFeedback('error', `Export failed: ${error.message}`, 5000);
+    }
+}
+
+/**
+ * Initializes CSV download UI functionality
+ */
+function initializeCSVDownloadUI() {
+    csvDownloadBtn = document.getElementById('csv-download-btn');
+    csvExportFeedback = document.getElementById('csv-export-feedback');
+    
+    if (csvDownloadBtn) {
+        csvDownloadBtn.addEventListener('click', handleCSVExport);
+        updateCSVButtonState(); // Initial state
+    }
+}
 
 function processFileUpload(files) {
     if (!files || !files.length) return;
@@ -225,6 +367,9 @@ function addTrackToHistory(index, name) {
         loadTrackFromHistory(Number(li.dataset.index));
     });
     list.appendChild(li);
+    
+    // Update CSV button state when new track is added
+    updateCSVButtonState();
 }
 
 function loadTrackFromHistory(index) {
@@ -244,5 +389,18 @@ window.onload = () => {
     EssentiaWASM().then((wasmModule) => {
         essentia = new wasmModule.EssentiaJS(false);
         essentia.arrayToVector = wasmModule.arrayToVector;
-    })
+    });
+    
+    // Make CSV export functions and data available globally for testing
+    window.csvExport = {
+        generateCSV: generateCSV,
+        downloadCSV: downloadCSV,
+        exportCSV: exportCSV,
+        schema: CSV_SCHEMA,
+        getAnalysedTracks: () => analysedTracks
+    };
+    
+    console.log('CSV export functionality initialized. Use window.csvExport to access functions.');
+    
+    initializeCSVDownloadUI();
 };
