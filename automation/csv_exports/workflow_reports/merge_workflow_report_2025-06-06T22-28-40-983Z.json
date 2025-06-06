@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-06-06T22:28:40.982Z",
+  "workflow": {
+    "totalDuration": 160,
+    "durationFormatted": "0s",
+    "attempts": 1,
+    "success": true,
+    "batchFilesProcessed": 24,
+    "totalRowsMerged": 497
+  },
+  "merge": {
+    "timestamp": "2025-06-06T22:28:40.978Z",
+    "outputFile": "csv_exports/music_analysis_complete_2025-06-06_222840904Z.csv",
+    "processingTime": 143,
+    "batchFiles": {
+      "found": 24,
+      "processed": 24,
+      "successRate": "100.00%"
+    },
+    "dataProcessing": {
+      "totalRowsProcessed": 497,
+      "duplicatesFound": 200,
+      "duplicatesResolved": 200,
+      "validationErrors": 0,
+      "processingErrors": 0
+    },
+    "performance": {
+      "processingTime": "0.14s",
+      "rowsPerSecond": 3476
+    }
+  },
+  "errors": [],
+  "warnings": [],
+  "performance": {
+    "mergeTime": "0.14s",
+    "rowsPerSecond": 3476,
+    "averageTimePerBatch": "6.67ms"
+  },
+  "output": {
+    "filePath": "csv_exports/music_analysis_complete_2025-06-06_222840904Z.csv",
+    "fileName": "music_analysis_complete_2025-06-06_222840904Z.csv",
+    "directory": "csv_exports"
+  }
+}
