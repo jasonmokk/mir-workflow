@@ -1,4 +1,4 @@
-# 🎵 MIR Audio Analysis - One-Click Solution
+# 🎵 MIR Audio Analysis Tool
 
 > **Automated music information retrieval using Essentia.js and deep learning models**
 
@@ -16,7 +16,7 @@ Transform your entire music collection into detailed analytical data with a sing
 
 1. **Clone or download this repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/jasonmokk/mir-workflow.git
    cd mir-workflow
    ```
 
