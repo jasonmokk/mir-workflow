@@ -105,7 +105,7 @@
     "duplicateStrategy": "keep_first",
     "enableValidation": true,
     "enableBackup": true,
-    "cleanupBatchFiles": true,
+    "cleanupBatchFiles": false,
     "encoding": "utf8",
     "includeMetadata": false,
     "maxMemoryUsage": 536870912
@@ -124,7 +124,7 @@
     "checkForBatchFiles": true,
     "validateBatchCompleteness": true,
     "enableWorkflowVerification": true,
-    "autoCleanupAfterMerge": true
+    "autoCleanupAfterMerge": false
   },
   "development": {
     "enableLiveReload": false,

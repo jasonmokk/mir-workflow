@@ -107,30 +107,7 @@ class BatchProcessor {
         }
     }
 
-    async cleanupBatchFilesAfterMerge() {
-        try {
-            console.log(chalk.blue('🧹 Cleaning up batch CSV files after successful merge...'));
-            
-            const batchDir = path.join(process.cwd(), 'csv_exports', 'batch_csvs');
-            
-            if (await fs.pathExists(batchDir)) {
-                const files = await fs.readdir(batchDir);
-                const batchFiles = files.filter(file => file.startsWith('batch_') && file.endsWith('.csv'));
-                
-                if (batchFiles.length > 0) {
-                    for (const file of batchFiles) {
-                        await fs.remove(path.join(batchDir, file));
-                    }
-                    console.log(chalk.green(`✓ Cleaned up ${batchFiles.length} batch CSV files`));
-                } else {
-                    console.log(chalk.gray('No batch files to clean up'));
-                }
-            }
-        } catch (error) {
-            console.warn(chalk.yellow('Batch cleanup warning:'), error.message);
-            // Don't fail the workflow for cleanup issues
-        }
-    }
+
     
     // Enhanced upload workflow - New for Task 2.2, Enhanced for Task 2.3
     async executeUploadWorkflow(directoryPath, options = {}) {
@@ -153,26 +130,73 @@ class BatchProcessor {
             
             // Execute auto-merge if enabled and upload was successful
             let mergeResult = null;
+            console.log(chalk.blue(`\n🔍 Merge check: mergeCSVs=${this.config.csvExport?.mergeCSVs}, workflowSuccess=${workflowResult.success}`));
+            
             if (this.config.csvExport?.mergeCSVs && workflowResult.success) {
                 try {
-                    console.log(chalk.blue('\n🔄 Auto-merge enabled, starting CSV merge...'));
-                    mergeResult = await this.mergeWorkflow.executeAutoMergeAfterUpload(workflowResult);
+                    console.log(chalk.blue('\n🔄 Creating final results CSV...'));
                     
-                    if (mergeResult.success) {
-                        console.log(chalk.green.bold('✅ Complete workflow finished successfully!'));
-                        console.log(chalk.gray(`   📊 Final unified CSV: ${path.basename(mergeResult.mergeResult.outputPath)}`));
+                    // Simple merge: find batch files and combine them
+                    const batchDir = path.join(process.cwd(), 'csv_exports', 'batch_csvs');
+                    const batchFiles = await fs.readdir(batchDir).catch(() => []);
+                    const csvFiles = batchFiles.filter(file => file.startsWith('batch_') && file.endsWith('.csv'));
+                    
+                    console.log(chalk.gray(`   📁 Found ${csvFiles.length} batch CSV files`));
+                    
+                    if (csvFiles.length > 0) {
+                        const resultsDir = path.resolve(__dirname, '..', 'results');
+                        await fs.ensureDir(resultsDir);
                         
-                        // Clean up batch files AFTER successful merge
-                        await this.cleanupBatchFilesAfterMerge();
+                        // Find next available result number
+                        const existingResults = await fs.readdir(resultsDir).catch(() => []);
+                        const resultNumbers = existingResults
+                            .filter(file => file.startsWith('music_analysis_results_') && file.endsWith('.csv'))
+                            .map(file => parseInt(file.match(/music_analysis_results_(\d+)\.csv/)?.[1] || '0'))
+                            .filter(num => !isNaN(num));
+                        const nextNumber = resultNumbers.length > 0 ? Math.max(...resultNumbers) + 1 : 1;
+                        const outputFilename = `music_analysis_results_${String(nextNumber).padStart(2, '0')}.csv`;
+                        const outputPath = path.join(resultsDir, outputFilename);
+                        
+                        // Simple merge: read first file to get header, then append all data rows
+                        let allData = [];
+                        let header = '';
+                        
+                        for (let i = 0; i < csvFiles.length; i++) {
+                            const csvPath = path.join(batchDir, csvFiles[i]);
+                            const content = await fs.readFile(csvPath, 'utf8');
+                            const lines = content.split('\n').filter(line => line.trim());
+                            
+                            if (i === 0) {
+                                header = lines[0]; // Save header from first file
+                                allData.push(...lines.slice(1)); // Add data rows
+                            } else {
+                                allData.push(...lines.slice(1)); // Add only data rows (skip header)
+                            }
+                        }
+                        
+                        // Write combined CSV
+                        const finalContent = header + '\n' + allData.join('\n') + '\n';
+                        await fs.writeFile(outputPath, finalContent, 'utf8');
+                        
+                        console.log(chalk.green.bold('✅ Final results CSV created successfully!'));
+                        console.log(chalk.gray(`   📊 File: ${outputFilename}`));
+                        console.log(chalk.gray(`   📍 Location: ${outputPath}`));
+                        console.log(chalk.gray(`   📈 Rows: ${allData.length} data rows`));
+                        
+                        mergeResult = { success: true, outputPath, filename: outputFilename };
                     } else {
-                        console.log(chalk.yellow('⚠️ Upload completed but merge failed. Batch CSV files are available.'));
+                        console.log(chalk.yellow('⚠️ No batch CSV files found to merge'));
+                        mergeResult = { success: false, error: 'No batch files found' };
                     }
                 } catch (mergeError) {
-                    console.error(chalk.red('⚠️ Auto-merge failed:'), mergeError.message);
-                    console.log(chalk.yellow('Upload completed successfully. You can run merge manually.'));
+                    console.error(chalk.red('⚠️ Results CSV creation failed:'), mergeError.message);
+                    console.log(chalk.yellow('Upload completed successfully. Check batch files manually.'));
+                    mergeResult = { success: false, error: mergeError.message };
                 }
             } else if (!this.config.csvExport?.mergeCSVs) {
                 console.log(chalk.blue('ℹ️ Auto-merge disabled. Batch CSV files available for manual merge.'));
+            } else {
+                console.log(chalk.yellow('⚠️ Auto-merge not executed: workflow may not have completed successfully'));
             }
             
             return {

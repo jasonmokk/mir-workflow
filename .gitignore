@@ -2,7 +2,7 @@ node_modules/
 .env
 dist/
 .DS_Store
-
+logs/
 # Data directory - ignore audio files but keep the directory
 data/*
 !data/.gitkeep

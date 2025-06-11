@@ -40,19 +40,22 @@ class UploadWorkflow {
             
             this.workflowStats.startTime = new Date();
             
-            // Step 1: Ensure server is running
+            // Step 1: Clean up previous batch files for fresh start
+            await this.cleanupPreviousBatchFiles();
+            
+            // Step 2: Ensure server is running
             await this.ensureServerRunning();
             
-            // Step 2: Initialize browser automation
+            // Step 3: Initialize browser automation
             await this.initializeBrowserAutomation();
             
-            // Step 3: Discover and batch files
+            // Step 4: Discover and batch files
             await this.prepareFilesForProcessing(directoryPath, options);
             
-            // Step 4: Execute batch processing workflow
+            // Step 5: Execute batch processing workflow
             await this.executeBatchProcessing(options);
             
-            // Step 5: Generate final report
+            // Step 6: Generate final report
             this.generateWorkflowReport();
             
             this.workflowStats.endTime = new Date();
@@ -72,6 +75,33 @@ class UploadWorkflow {
         }
     }
     
+    async cleanupPreviousBatchFiles() {
+        this.spinner = ora('Cleaning up previous batch files for fresh start...').start();
+        
+        try {
+            const batchDir = path.join(process.cwd(), 'csv_exports', 'batch_csvs');
+            
+            if (await fs.pathExists(batchDir)) {
+                const files = await fs.readdir(batchDir);
+                const batchFiles = files.filter(file => file.startsWith('batch_') && file.endsWith('.csv'));
+                
+                if (batchFiles.length > 0) {
+                    for (const file of batchFiles) {
+                        await fs.remove(path.join(batchDir, file));
+                    }
+                    this.spinner.succeed(`Cleaned up ${batchFiles.length} previous batch files`);
+                } else {
+                    this.spinner.succeed('No previous batch files to clean up');
+                }
+            } else {
+                this.spinner.succeed('No previous batch files to clean up');
+            }
+        } catch (error) {
+            this.spinner.warn(`Could not clean up batch files: ${error.message}`);
+            // Don't fail the workflow for cleanup issues
+        }
+    }
+
     async ensureServerRunning() {
         this.spinner = ora('Ensuring MIR server is running...').start();
         
@@ -351,15 +381,35 @@ class UploadWorkflow {
             );
             await fs.ensureDir(batchDownloadDir);
             
+
+            
             // Download CSV with batch-specific naming
             const csvResult = await this.browser.downloadCSV(batchDownloadDir);
             
+            console.log(chalk.gray(`   🔍 CSV download result: success=${csvResult.success}, filename=${csvResult.filename}`));
+            
             if (csvResult.success) {
+                // Check if original file exists and has content
+                if (await fs.pathExists(csvResult.filePath)) {
+                    const stats = await fs.stat(csvResult.filePath);
+                    console.log(chalk.gray(`   📊 Original CSV size: ${stats.size} bytes`));
+                } else {
+                    console.log(chalk.yellow(`   ⚠️ Original CSV file not found: ${csvResult.filePath}`));
+                }
+                
                 // Rename file to include batch information
                 const batchFilename = `batch_${String(batch.id).padStart(3, '0')}_${csvResult.filename}`;
                 const batchFilePath = path.join(batchDownloadDir, batchFilename);
                 
                 await fs.move(csvResult.filePath, batchFilePath);
+                
+                // Check final file
+                if (await fs.pathExists(batchFilePath)) {
+                    const finalStats = await fs.stat(batchFilePath);
+                    console.log(chalk.gray(`   📊 Final batch CSV size: ${finalStats.size} bytes`));
+                } else {
+                    console.log(chalk.red(`   ❌ Final batch CSV not found: ${batchFilePath}`));
+                }
                 
                 // Verify CSV integrity
                 const isValid = await this.verifyCsvIntegrity(batchFilePath, batch.files.length);
