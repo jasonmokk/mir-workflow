@@ -10,3 +10,6 @@ data/*
 # Results directory - ignore generated CSV files but keep the directory  
 results/*
 !results/.gitkeep
+
+csv_exports/*
+!csv_exports/.gitkeep
