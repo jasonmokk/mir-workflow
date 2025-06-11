@@ -6,7 +6,7 @@ Transform your entire music collection into detailed analytical data with a sing
 
 ---
 
-## 🚀 Quick Start (5 Minutes to Results!)
+## 🚀 Quick Start 
 
 ### Prerequisites
 - **Node.js 16+** ([Download here](https://nodejs.org/))
