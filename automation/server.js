@@ -52,10 +52,17 @@ class MIRServer {
             });
         }
         
-        // Request logging
+        // Request logging - only log important requests, not every asset
         this.app.use((req, res, next) => {
-            const timestamp = new Date().toISOString();
-            console.log(chalk.gray(`[${timestamp}] ${req.method} ${req.url}`));
+            // Only log non-asset requests or errors
+            const isAssetRequest = req.url.includes('.js') || req.url.includes('.wasm') || 
+                                 req.url.includes('.css') || req.url.includes('.json') ||
+                                 req.url.includes('.bin') || req.url.includes('/models/');
+            
+            if (!isAssetRequest || req.url === '/' || req.url.includes('/api/')) {
+                const timestamp = new Date().toISOString();
+                console.log(chalk.gray(`[${timestamp}] ${req.method} ${req.url}`));
+            }
             next();
         });
         

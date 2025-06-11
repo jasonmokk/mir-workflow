@@ -11,6 +11,8 @@ import { fileURLToPath } from 'url';
 import MIRServer from './server.js';
 import BrowserAutomation from './browser-automation.js';
 import FileManager from './file-manager.js';
+import UploadWorkflow from './upload-workflow.js';
+import MergeWorkflow from './merge-workflow.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,6 +23,8 @@ class BatchProcessor {
         this.server = null;
         this.browser = null;
         this.fileManager = null;
+        this.uploadWorkflow = null;
+        this.mergeWorkflow = null;
         this.spinner = null;
         
         // Load configuration
@@ -28,17 +32,41 @@ class BatchProcessor {
         
         // Initialize components
         this.server = new MIRServer(this.config.server);
-        this.browser = new BrowserAutomation(this.config.browser);
-        this.fileManager = new FileManager(this.config.fileDiscovery);
+        this.browser = new BrowserAutomation({
+            ...this.config.browser,
+            ...this.config.uploadAutomation,
+            ...this.config.memoryManagement,
+            ...this.config.processingMonitoring
+        });
+        this.fileManager = new FileManager({
+            ...this.config.fileDiscovery,
+            ...this.config.batchProcessing
+        });
+        this.uploadWorkflow = new UploadWorkflow(
+            this.server, 
+            this.browser, 
+            this.fileManager,
+            {
+                ...this.config.batchProcessing,
+                ...this.config.uploadAutomation,
+                ...this.config.memoryManagement,
+                ...this.config.csvExport
+            }
+        );
+        this.mergeWorkflow = new MergeWorkflow({
+            csvMerger: this.config.csvMerge || {},
+            workflow: this.config.mergeWorkflow || {},
+            integration: this.config.mergeIntegration || {}
+        });
         
         // Setup graceful shutdown
         this.setupGracefulShutdown();
     }
     
-    async loadConfig() {
+    loadConfig() {
         try {
             const configPath = path.join(__dirname, 'config.json');
-            this.config = await fs.readJson(configPath);
+            this.config = fs.readJsonSync(configPath);
             console.log(chalk.blue('📋 Configuration loaded'));
         } catch (error) {
             console.error(chalk.red('Failed to load configuration:'), error.message);
@@ -76,6 +104,57 @@ class BatchProcessor {
             console.log(chalk.green('✓ Cleanup completed'));
         } catch (error) {
             console.error(chalk.red('Cleanup error:'), error.message);
+        }
+    }
+    
+    // Enhanced upload workflow - New for Task 2.2, Enhanced for Task 2.3
+    async executeUploadWorkflow(directoryPath, options = {}) {
+        try {
+            console.log(chalk.blue.bold('🎵 MIR Upload Automation Framework'));
+            console.log(chalk.blue.bold('═'.repeat(40)));
+            
+            // Execute the complete upload workflow
+            const workflowResult = await this.uploadWorkflow.executeFullWorkflow(directoryPath, {
+                batchSize: parseInt(options.batchSize) || this.config.batchProcessing.batchSize,
+                strict: options.strict || false,
+                enableMemoryMonitoring: this.config.memoryManagement.enableMemoryMonitoring,
+                enableProgressTracking: this.config.processingMonitoring.enableProgressTracking
+            });
+            
+            console.log(chalk.green.bold('\n🎉 Upload workflow completed successfully!'));
+            
+            // Save workflow report
+            await this.saveWorkflowReport(workflowResult.stats || workflowResult);
+            
+            // Execute auto-merge if enabled and upload was successful
+            let mergeResult = null;
+            if (this.config.csvExport?.mergeCSVs && workflowResult.success) {
+                try {
+                    console.log(chalk.blue('\n🔄 Auto-merge enabled, starting CSV merge...'));
+                    mergeResult = await this.mergeWorkflow.executeAutoMergeAfterUpload(workflowResult);
+                    
+                    if (mergeResult.success) {
+                        console.log(chalk.green.bold('✅ Complete workflow finished successfully!'));
+                        console.log(chalk.gray(`   📊 Final unified CSV: ${path.basename(mergeResult.mergeResult.outputPath)}`));
+                    } else {
+                        console.log(chalk.yellow('⚠️ Upload completed but merge failed. Batch CSV files are available.'));
+                    }
+                } catch (mergeError) {
+                    console.error(chalk.red('⚠️ Auto-merge failed:'), mergeError.message);
+                    console.log(chalk.yellow('Upload completed successfully. You can run merge manually.'));
+                }
+            } else if (!this.config.csvExport?.mergeCSVs) {
+                console.log(chalk.blue('ℹ️ Auto-merge disabled. Batch CSV files available for manual merge.'));
+            }
+            
+            return {
+                ...workflowResult,
+                mergeResult
+            };
+            
+        } catch (error) {
+            console.error(chalk.red.bold('\n❌ Upload workflow failed:'), error.message);
+            throw error;
         }
     }
     
@@ -305,6 +384,20 @@ class BatchProcessor {
         }
     }
     
+    async saveWorkflowReport(workflowResult) {
+        try {
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const reportPath = path.join(this.config.logging.logDirectory || './logs', `upload-workflow-report-${timestamp}.json`);
+            
+            await fs.ensureDir(path.dirname(reportPath));
+            await fs.writeJson(reportPath, workflowResult, { spaces: 2 });
+            
+            console.log(chalk.blue(`\n📄 Workflow report saved: ${reportPath}`));
+        } catch (error) {
+            console.warn(chalk.yellow(`Failed to save workflow report: ${error.message}`));
+        }
+    }
+    
     sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -335,10 +428,145 @@ program
     .version('1.0.0');
 
 program
+    .command('merge')
+    .description('Merge batch CSV files into a single unified CSV')
+    .option('--input-dir <directory>', 'Input directory containing batch CSV files', './csv_exports/batch_csvs')
+    .option('--output-dir <directory>', 'Output directory for merged CSV', './csv_exports')
+    .option('--cleanup', 'Remove batch files after successful merge')
+    .option('--verify', 'Enable comprehensive verification of merge results')
+    .action(async (options) => {
+        const processor = new BatchProcessor();
+        
+        try {
+            console.log(chalk.blue('📊 Starting CSV merge operation...'));
+            
+            // Configure merge settings
+            processor.mergeWorkflow.config.csvMerger.inputDirectory = options.inputDir;
+            processor.mergeWorkflow.config.csvMerger.outputDirectory = options.outputDir;
+            processor.mergeWorkflow.config.csvMerger.cleanupBatchFiles = options.cleanup || false;
+            processor.mergeWorkflow.config.integration.enableWorkflowVerification = options.verify || false;
+            
+            const mergeResult = await processor.mergeWorkflow.executeStandaloneMerge({
+                standalone: true,
+                triggeredBy: 'cli_command'
+            });
+            
+            if (mergeResult.success) {
+                console.log(chalk.green.bold('\n✅ CSV merge completed successfully!'));
+                console.log(chalk.gray(`   Output: ${path.basename(mergeResult.mergeResult.outputPath)}`));
+            } else {
+                console.error(chalk.red.bold('\n❌ CSV merge failed:'), mergeResult.error);
+                process.exit(1);
+            }
+            
+        } catch (error) {
+            console.error(chalk.red.bold('\n❌ Merge operation failed:'), error.message);
+            process.exit(1);
+        }
+    });
+
+program
+    .command('merge-status')
+    .description('Show CSV merge status and available batch files')
+    .action(async () => {
+        const processor = new BatchProcessor();
+        
+        try {
+            console.log(chalk.blue('🔍 Checking CSV merge status...'));
+            
+            const mergeStatus = await processor.mergeWorkflow.getMergeStatus();
+            
+            console.log(chalk.blue.bold('\n📊 CSV Merge Status'));
+            console.log(chalk.blue('═'.repeat(20)));
+            
+            if (mergeStatus.error) {
+                console.log(chalk.red(`Error: ${mergeStatus.error}`));
+                return;
+            }
+            
+            console.log(chalk.white(`Batch files available: ${mergeStatus.batchFilesAvailable}`));
+            console.log(chalk.white(`Ready for merge: ${mergeStatus.readyForMerge ? 'Yes' : 'No'}`));
+            
+            if (mergeStatus.batchNumbers && mergeStatus.batchNumbers.length > 0) {
+                console.log(chalk.white(`Batch numbers: ${mergeStatus.batchNumbers.join(', ')}`));
+            }
+            
+            if (mergeStatus.dateRange && mergeStatus.dateRange.earliest) {
+                console.log(chalk.white(`Date range: ${mergeStatus.dateRange.earliest.toISOString().split('T')[0]} to ${mergeStatus.dateRange.latest.toISOString().split('T')[0]}`));
+            }
+            
+            if (mergeStatus.totalSizeBytes > 0) {
+                console.log(chalk.white(`Total size: ${(mergeStatus.totalSizeBytes / 1024).toFixed(2)} KB`));
+            }
+            
+        } catch (error) {
+            console.error(chalk.red('Merge status check failed:'), error.message);
+            process.exit(1);
+        }
+    });
+
+program
+    .command('upload')
+    .description('Execute automated upload workflow with enhanced browser automation')
+    .argument('<directory>', 'Directory containing audio files to upload and process')
+    .option('-b, --batch-size <size>', 'Number of files per batch', '25')
+    .option('-s, --strict', 'Stop processing on first batch failure')
+    .option('--resume', 'Resume from previous processing state')
+    .option('--clear-state', 'Clear previous processing state before starting')
+    .option('--headless', 'Run browser in headless mode')
+    .option('--visible', 'Run browser in visible mode for debugging')
+    .option('--no-merge', 'Disable auto-merge after upload completion')
+    .action(async (directory, options) => {
+        const processor = new BatchProcessor();
+        
+        try {
+            // Override browser settings based on options
+            if (options.headless) {
+                processor.browser.config.headless = true;
+                processor.browser.config.visible = false;
+            }
+            if (options.visible) {
+                processor.browser.config.headless = false;
+                processor.browser.config.visible = true;
+            }
+            
+            // Override merge settings
+            if (options.noMerge) {
+                processor.config.csvExport.mergeCSVs = false;
+                console.log(chalk.yellow('⚠️ Auto-merge disabled by --no-merge flag'));
+            }
+            
+            // Handle state management
+            if (options.clearState) {
+                await processor.fileManager.clearState();
+                console.log(chalk.blue('🗑️ Previous processing state cleared'));
+            } else if (options.resume) {
+                const loaded = await processor.fileManager.loadState();
+                if (loaded) {
+                    console.log(chalk.blue('📄 Resumed from previous processing state'));
+                } else {
+                    console.log(chalk.yellow('⚠️ No previous state found, starting fresh'));
+                }
+            }
+            
+            await processor.executeUploadWorkflow(directory, {
+                batchSize: parseInt(options.batchSize),
+                strict: options.strict
+            });
+            
+        } catch (error) {
+            console.error(chalk.red.bold('\n❌ Upload workflow failed:'), error.message);
+            process.exit(1);
+        } finally {
+            await processor.cleanup();
+        }
+    });
+
+program
     .command('process')
-    .description('Process a directory of audio files')
+    .description('Process a directory of audio files (legacy batch processing)')
     .argument('<directory>', 'Directory containing audio files to process')
-    .option('-b, --batch-size <size>', 'Number of files per batch', '100')
+    .option('-b, --batch-size <size>', 'Number of files per batch', '25')
     .option('-s, --strict', 'Stop processing on first batch failure')
     .option('--resume', 'Resume from previous processing state')
     .option('--clear-state', 'Clear previous processing state before starting')
@@ -422,32 +650,62 @@ program
 
 program
     .command('status')
-    .description('Show current processing status')
+    .description('Show current processing status and CSV merge availability')
     .action(async () => {
         const processor = new BatchProcessor();
         
         try {
+            // Check processing state
             const loaded = await processor.fileManager.loadState();
             
-            if (!loaded) {
-                console.log(chalk.yellow('No processing state found'));
-                return;
+            console.log(chalk.blue.bold('📊 System Status'));
+            console.log(chalk.blue('═'.repeat(15)));
+            
+            if (loaded) {
+                const progress = processor.fileManager.getProcessingProgress();
+                
+                console.log(chalk.blue.bold('\n📦 Processing Status:'));
+                console.log(chalk.white(`Files: ${progress.processedCount}/${progress.totalFiles} (${progress.progressPercentage}%)`));
+                console.log(chalk.white(`Batches: ${progress.completedBatches}/${progress.totalBatches}`));
+                console.log(chalk.white(`Failed files: ${progress.failedCount}`));
+                
+                if (progress.elapsedTime > 0) {
+                    console.log(chalk.white(`Elapsed time: ${processor.formatDuration(progress.elapsedTime)}`));
+                }
+                
+                if (progress.estimatedRemainingTime) {
+                    console.log(chalk.white(`Estimated remaining: ${processor.formatDuration(progress.estimatedRemainingTime)}`));
+                }
+            } else {
+                console.log(chalk.yellow('\n📦 No active processing state found'));
             }
             
-            const progress = processor.fileManager.getProcessingProgress();
-            
-            console.log(chalk.blue.bold('📊 Processing Status'));
-            console.log(chalk.blue('═'.repeat(20)));
-            console.log(chalk.white(`Files: ${progress.processedCount}/${progress.totalFiles} (${progress.progressPercentage}%)`));
-            console.log(chalk.white(`Batches: ${progress.completedBatches}/${progress.totalBatches}`));
-            console.log(chalk.white(`Failed files: ${progress.failedCount}`));
-            
-            if (progress.elapsedTime > 0) {
-                console.log(chalk.white(`Elapsed time: ${processor.formatDuration(progress.elapsedTime)}`));
-            }
-            
-            if (progress.estimatedRemainingTime) {
-                console.log(chalk.white(`Estimated remaining: ${processor.formatDuration(progress.estimatedRemainingTime)}`));
+            // Check merge status
+            try {
+                const mergeStatus = await processor.mergeWorkflow.getMergeStatus();
+                
+                console.log(chalk.blue.bold('\n📊 CSV Merge Status:'));
+                
+                if (mergeStatus.error) {
+                    console.log(chalk.red(`Error: ${mergeStatus.error}`));
+                } else {
+                    console.log(chalk.white(`Batch files available: ${mergeStatus.batchFilesAvailable}`));
+                    console.log(chalk.white(`Ready for merge: ${mergeStatus.readyForMerge ? 'Yes' : 'No'}`));
+                    
+                    if (mergeStatus.batchNumbers && mergeStatus.batchNumbers.length > 0) {
+                        console.log(chalk.white(`Batch numbers: ${mergeStatus.batchNumbers.join(', ')}`));
+                    }
+                    
+                    if (mergeStatus.totalSizeBytes > 0) {
+                        console.log(chalk.white(`Total batch size: ${(mergeStatus.totalSizeBytes / 1024).toFixed(2)} KB`));
+                    }
+                    
+                    if (mergeStatus.readyForMerge) {
+                        console.log(chalk.green('\n💡 Tip: Run "node batch-processor.js merge" to merge available batch files'));
+                    }
+                }
+            } catch (mergeError) {
+                console.log(chalk.red(`\n📊 CSV Merge Status: Error - ${mergeError.message}`));
             }
             
         } catch (error) {
@@ -472,10 +730,16 @@ program
         }
     });
 
-// Handle no command
-if (process.argv.length < 3) {
-    program.help();
+// Only run CLI if this file is being executed directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+    // Handle no command
+    if (process.argv.length < 3) {
+        program.help();
+    }
+
+    // Parse command line arguments
+    program.parse();
 }
 
-// Parse command line arguments
-program.parse(); 
+// Export BatchProcessor class for use in other modules
+export default BatchProcessor; 

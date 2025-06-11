@@ -13,27 +13,28 @@
       "imagesRoute": "/images"
     }
   },
-      "browser": {
-     "headless": true,
-     "visible": false,
-     "devtools": false,
-     "timeout": 60000,
-     "navigationTimeout": 60000,
-     "slowMo": 0,
+  "browser": {
+    "headless": true,
+    "visible": false,
+    "devtools": false,
+    "timeout": 45000,
+    "navigationTimeout": 45000,
+    "slowMo": 0,
+    "screenshotsEnabled": false,
     "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-    "uploadTimeout": 600000,
-    "analysisProgressCheckInterval": 5000,
-    "maxUploadRetries": 3,
+    "uploadTimeout": 300000,
+    "analysisProgressCheckInterval": 10000,
+    "maxUploadRetries": 2,
     "enableUploadValidation": true,
     "enableMemoryMonitoring": true,
-    "memoryCheckInterval": 30000
+    "memoryCheckInterval": 60000
   },
   "batchProcessing": {
-    "batchSize": 50,
-    "maxRetries": 3,
-    "retryDelay": 1000,
-    "delayBetweenBatches": 5000,
-    "analysisTimeout": 900000,
+    "batchSize": 30,
+    "maxRetries": 2,
+    "retryDelay": 1500,
+    "delayBetweenBatches": 10000,
+    "analysisTimeout": 600000,
     "enableProgressTracking": true,
     "resumeFromFailure": true
   },
@@ -43,25 +44,25 @@
     "clearStateBeforeUpload": true,
     "monitorUploadProgress": true,
     "maxFileSize": 104857600,
-    "maxFilesPerBatch": 50,
-    "uploadProgressTimeout": 60000,
+    "maxFilesPerBatch": 30,
+    "uploadProgressTimeout": 45000,
     "retryFailedUploads": true,
     "saveUploadLogs": false
   },
   "memoryManagement": {
     "enableMemoryMonitoring": true,
     "memoryThreshold": 1073741824,
-    "memoryCheckInterval": 30000,
+    "memoryCheckInterval": 60000,
     "enableAutomaticCleanup": true,
     "cleanupBetweenBatches": true,
-    "enableMemoryReports": true,
+    "enableMemoryReports": false,
     "restartBrowserOnMemoryLimit": false
   },
   "processingMonitoring": {
     "enableProgressTracking": true,
     "progressCheckInterval": 10000,
     "enableStuckDetection": true,
-    "maxStuckTime": 1200000,
+    "maxStuckTime": 900000,
     "enableTimeEstimation": true,
     "saveProcessingStats": false,
     "enableDetailedLogging": false
@@ -81,20 +82,20 @@
   },
   "logging": {
     "level": "info",
-    "enableFileLogging": true,
+    "enableFileLogging": false,
     "logDirectory": "./logs",
-    "maxLogFiles": 10,
-    "timestampFormat": "YYYY-MM-DD HH:mm:ss"
+    "maxLogFiles": 5,
+    "timestampFormat": "HH:mm:ss"
   },
   "csvExport": {
     "enableAutoDownload": true,
     "outputDirectory": "./csv_exports",
     "filenameTemplate": "music_analysis_YYYY-MM-DD_HHmmss.csv",
     "mergeCSVs": true,
-    "finalFilename": "merged_analysis_results.csv",
+    "finalFilename": "music_analysis_complete.csv",
     "batchCSVDirectory": "batch_csvs",
     "enableCSVValidation": true,
-    "saveDownloadLogs": true
+    "saveDownloadLogs": false
   },
   "csvMerge": {
     "inputDirectory": "./csv_exports/batch_csvs",
@@ -103,8 +104,8 @@
     "batchFilenamePattern": "batch_*_music_analysis_*.csv",
     "duplicateStrategy": "keep_first",
     "enableValidation": true,
-    "enableBackup": true,
-    "cleanupBatchFiles": false,
+    "enableBackup": false,
+    "cleanupBatchFiles": true,
     "encoding": "utf8",
     "includeMetadata": false,
     "maxMemoryUsage": 536870912
@@ -113,23 +114,23 @@
     "enableAutoMerge": true,
     "autoMergeAfterUpload": true,
     "enableProgressReporting": true,
-    "enableWorkflowLogging": true,
-    "saveWorkflowReports": true,
+    "enableWorkflowLogging": false,
+    "saveWorkflowReports": false,
     "retryFailedMerge": true,
-    "maxMergeRetries": 3,
-    "mergeRetryDelay": 5000
+    "maxMergeRetries": 2,
+    "mergeRetryDelay": 3000
   },
   "mergeIntegration": {
     "checkForBatchFiles": true,
     "validateBatchCompleteness": true,
     "enableWorkflowVerification": true,
-    "autoCleanupAfterMerge": false
+    "autoCleanupAfterMerge": true
   },
   "development": {
     "enableLiveReload": false,
     "debugMode": false,
     "verboseLogging": false,
-    "preserveFailedFiles": true,
+    "preserveFailedFiles": false,
     "quietMode": true
   }
 } 
