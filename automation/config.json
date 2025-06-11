@@ -34,8 +34,8 @@
     "retryDelay": 1000,
     "delayBetweenBatches": 5000,
     "analysisTimeout": 900000,
-    "enableProgressTracking": true,
-    "resumeFromFailure": true
+    "enableProgressTracking": false,
+    "resumeFromFailure": false
   },
   "uploadAutomation": {
     "enableAutomatedUpload": true,
@@ -58,7 +58,7 @@
     "restartBrowserOnMemoryLimit": false
   },
   "processingMonitoring": {
-    "enableProgressTracking": true,
+    "enableProgressTracking": false,
     "progressCheckInterval": 10000,
     "enableStuckDetection": true,
     "maxStuckTime": 1200000,
@@ -91,20 +91,21 @@
     "outputDirectory": "./csv_exports",
     "filenameTemplate": "music_analysis_YYYY-MM-DD_HHmmss.csv",
     "mergeCSVs": true,
-    "finalFilename": "merged_analysis_results.csv",
+    "finalFilename": "music_analysis_results.csv",
+    "finalOutputDirectory": "../results",
     "batchCSVDirectory": "batch_csvs",
     "enableCSVValidation": true,
-    "saveDownloadLogs": true
+    "saveDownloadLogs": false
   },
   "csvMerge": {
     "inputDirectory": "./csv_exports/batch_csvs",
-    "outputDirectory": "./csv_exports",
-    "outputFilename": "music_analysis_complete_{timestamp}.csv",
+    "outputDirectory": "../results",
+    "outputFilename": "music_analysis_results_{number:02d}.csv",
     "batchFilenamePattern": "batch_*_music_analysis_*.csv",
     "duplicateStrategy": "keep_first",
     "enableValidation": true,
     "enableBackup": true,
-    "cleanupBatchFiles": false,
+    "cleanupBatchFiles": true,
     "encoding": "utf8",
     "includeMetadata": false,
     "maxMemoryUsage": 536870912
@@ -123,7 +124,7 @@
     "checkForBatchFiles": true,
     "validateBatchCompleteness": true,
     "enableWorkflowVerification": true,
-    "autoCleanupAfterMerge": false
+    "autoCleanupAfterMerge": true
   },
   "development": {
     "enableLiveReload": false,

@@ -26,8 +26,7 @@ Transform your entire music collection into detailed analytical data with a sing
    ```
 
 3. **Add your audio files**
-   - Create a `data` folder in the project root
-   - Copy your audio files into the `data` folder
+   - Copy your audio files into the existing `data` folder
    ```
    mir-workflow/
    ├── data/
@@ -66,9 +65,9 @@ Transform your entire music collection into detailed analytical data with a sing
 
 ### Output Files:
 - **Individual batches**: `automation/csv_exports/batch_csvs/`
-- **Complete results**: `automation/csv_exports/music_analysis_complete_*.csv`
+- **Final results**: `results/music_analysis_results_01.csv`
 
-The final CSV file can be opened in Excel, Google Sheets, or any data analysis tool.
+The final CSV file is saved in the `results` directory with numbered filenames (01, 02, 03, etc.) and can be opened in Excel, Google Sheets, or any data analysis tool.
 
 ---
 
@@ -98,8 +97,8 @@ npm run help
 
 ### ❌ "No audio files found"
 **Solution**: 
-- Make sure you have a `data` folder in the project root
-- Add audio files in supported formats: `.mp3`, `.wav`, `.flac`, `.ogg`, `.m4a`, `.aac`
+- Add audio files to the `data` folder (it already exists in the project)
+- Use supported formats: `.mp3`, `.wav`, `.flac`, `.ogg`, `.m4a`, `.aac`
 - Check that files aren't corrupted
 
 ### ❌ "Browser launch failed"
@@ -132,8 +131,9 @@ npm run help
 ```
 mir-workflow/
 ├── 📁 data/                     # Your audio files go here
+├── 📁 results/                  # Final analysis results (CSV files)
 ├── 📁 automation/               # Analysis engine (don't modify)
-│   ├── 📁 csv_exports/         # Results will appear here
+│   ├── 📁 csv_exports/         # Intermediate batch files
 │   └── 📁 logs/                # Error logs (for troubleshooting)
 ├── 📄 run-analysis.js          # One-click analysis script
 ├── 📄 package.json             # Project configuration
@@ -174,8 +174,8 @@ npm run server
 # Open http://localhost:3000 in your browser
 ```
 
-### Resume Processing
-If analysis was interrupted, it will automatically resume from where it left off on the next run.
+### Clean Run Every Time
+Each analysis run creates a completely separate result file - no carryover from previous runs. Perfect for analyzing different music collections independently.
 
 ---
 

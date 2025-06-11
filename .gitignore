@@ -2,4 +2,11 @@ node_modules/
 .env
 dist/
 .DS_Store
-data/
+
+# Data directory - ignore audio files but keep the directory
+data/*
+!data/.gitkeep
+
+# Results directory - ignore generated CSV files but keep the directory  
+results/*
+!results/.gitkeep

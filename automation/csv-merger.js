@@ -412,17 +412,29 @@ export default class CSVMerger {
             // Ensure output directory exists
             await fs.ensureDir(this.config.outputDirectory);
 
-            // Generate output filename with timestamp
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T');
-            const dateStr = timestamp[0];
-            const timeStr = timestamp[1].split('.')[0].replace(/-/g, '');
+            // Generate output filename with incremental numbering
+            let filename;
+            let outputPath;
             
-            const filename = this.config.outputFilename
-                .replace('{timestamp}', `${dateStr}_${timeStr}`)
-                .replace('YYYY-MM-DD', dateStr)
-                .replace('HHmmss', timeStr);
+            if (this.config.outputFilename.includes('{number')) {
+                // Use incremental numbering
+                const nextNumber = await this.getNextFileNumber();
+                filename = this.config.outputFilename
+                    .replace('{number:02d}', String(nextNumber).padStart(2, '0'))
+                    .replace('{number}', String(nextNumber));
+            } else {
+                // Fallback to timestamp-based naming
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T');
+                const dateStr = timestamp[0];
+                const timeStr = timestamp[1].split('.')[0].replace(/-/g, '');
+                
+                filename = this.config.outputFilename
+                    .replace('{timestamp}', `${dateStr}_${timeStr}`)
+                    .replace('YYYY-MM-DD', dateStr)
+                    .replace('HHmmss', timeStr);
+            }
 
-            const outputPath = path.join(this.config.outputDirectory, filename);
+            outputPath = path.join(this.config.outputDirectory, filename);
 
             // Create backup if file exists
             if (this.config.enableBackup && await fs.pathExists(outputPath)) {
@@ -442,6 +454,43 @@ export default class CSVMerger {
 
         } catch (error) {
             throw new Error(`Failed to generate output file: ${error.message}`);
+        }
+    }
+
+    /**
+     * Get the next file number for incremental naming
+     */
+    async getNextFileNumber() {
+        try {
+            // Ensure output directory exists
+            await fs.ensureDir(this.config.outputDirectory);
+            
+            // Find existing files with the same base pattern
+            const basePattern = this.config.outputFilename
+                .replace('{number:02d}', '*')
+                .replace('{number}', '*');
+            
+            const pattern = path.join(this.config.outputDirectory, basePattern);
+            const existingFiles = await glob(pattern);
+            
+            if (existingFiles.length === 0) {
+                return 1; // Start with 01
+            }
+            
+            // Extract numbers from existing files
+            const numbers = existingFiles.map(file => {
+                const basename = path.basename(file);
+                const match = basename.match(/music_analysis_results_(\d+)\.csv/);
+                return match ? parseInt(match[1]) : 0;
+            }).filter(num => num > 0);
+            
+            // Return next number
+            const maxNumber = numbers.length > 0 ? Math.max(...numbers) : 0;
+            return maxNumber + 1;
+            
+        } catch (error) {
+            console.warn(chalk.yellow(`Warning: Could not determine next file number, using 1: ${error.message}`));
+            return 1;
         }
     }
 

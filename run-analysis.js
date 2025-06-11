@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
+import chalk from 'chalk';
+import BatchProcessor from './automation/batch-processor.js';
+import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs-extra';
-import chalk from 'chalk';
-import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+  const __dirname = path.dirname(__filename);
 
-// Import the batch processor
-import BatchProcessor from './automation/batch-processor.js';
+
 
 async function runAnalysis() {
     console.log(chalk.blue.bold('🎵 MIR Audio Analysis - One-Click Solution'));
@@ -24,17 +24,10 @@ async function runAnalysis() {
         const dataDir = path.join(__dirname, 'data');
         
         if (!(await fs.pathExists(dataDir))) {
-            console.log(chalk.red.bold('❌ Data directory not found!'));
-            console.log(chalk.yellow('Please create a "data" directory in the project root and add your audio files.'));
+            console.log(chalk.red.bold('❌ Data directory missing!'));
+            console.log(chalk.yellow('The "data" directory should exist in the project root.'));
+            console.log(chalk.gray('Please restore the data directory and add your audio files.'));
             console.log(chalk.gray('Supported formats: .mp3, .wav, .flac, .ogg, .m4a, .aac'));
-            console.log('');
-            console.log(chalk.blue('Example structure:'));
-            console.log(chalk.gray('  mir-workflow/'));
-            console.log(chalk.gray('  ├── data/'));
-            console.log(chalk.gray('  │   ├── song1.mp3'));
-            console.log(chalk.gray('  │   ├── song2.wav'));
-            console.log(chalk.gray('  │   └── more_songs...'));
-            console.log(chalk.gray('  └── run-analysis.js'));
             process.exit(1);
         }
         
@@ -83,9 +76,9 @@ async function runAnalysis() {
         console.log(chalk.green.bold('\n✅ Analysis Complete!'));
         console.log(chalk.blue('📊 Results available in:'));
         console.log(chalk.gray(`   • Individual batches: ./automation/csv_exports/batch_csvs/`));
-        console.log(chalk.gray(`   • Merged results: ./automation/csv_exports/music_analysis_complete_*.csv`));
+        console.log(chalk.gray(`   • Final results: ./results/music_analysis_results_01.csv`));
         console.log('');
-        console.log(chalk.blue('💡 The merged CSV file contains all analysis results for your music collection.'));
+        console.log(chalk.blue('💡 The final results file in the "results" directory contains all analysis results for your music collection.'));
         
     } catch (error) {
         console.error(chalk.red.bold('\n❌ Analysis failed:'), error.message);
