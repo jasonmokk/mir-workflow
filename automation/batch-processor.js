@@ -106,6 +106,31 @@ class BatchProcessor {
             console.error(chalk.red('Cleanup error:'), error.message);
         }
     }
+
+    async cleanupBatchFilesAfterMerge() {
+        try {
+            console.log(chalk.blue('🧹 Cleaning up batch CSV files after successful merge...'));
+            
+            const batchDir = path.join(process.cwd(), 'csv_exports', 'batch_csvs');
+            
+            if (await fs.pathExists(batchDir)) {
+                const files = await fs.readdir(batchDir);
+                const batchFiles = files.filter(file => file.startsWith('batch_') && file.endsWith('.csv'));
+                
+                if (batchFiles.length > 0) {
+                    for (const file of batchFiles) {
+                        await fs.remove(path.join(batchDir, file));
+                    }
+                    console.log(chalk.green(`✓ Cleaned up ${batchFiles.length} batch CSV files`));
+                } else {
+                    console.log(chalk.gray('No batch files to clean up'));
+                }
+            }
+        } catch (error) {
+            console.warn(chalk.yellow('Batch cleanup warning:'), error.message);
+            // Don't fail the workflow for cleanup issues
+        }
+    }
     
     // Enhanced upload workflow - New for Task 2.2, Enhanced for Task 2.3
     async executeUploadWorkflow(directoryPath, options = {}) {
@@ -136,6 +161,9 @@ class BatchProcessor {
                     if (mergeResult.success) {
                         console.log(chalk.green.bold('✅ Complete workflow finished successfully!'));
                         console.log(chalk.gray(`   📊 Final unified CSV: ${path.basename(mergeResult.mergeResult.outputPath)}`));
+                        
+                        // Clean up batch files AFTER successful merge
+                        await this.cleanupBatchFilesAfterMerge();
                     } else {
                         console.log(chalk.yellow('⚠️ Upload completed but merge failed. Batch CSV files are available.'));
                     }

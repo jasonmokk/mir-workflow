@@ -43,19 +43,16 @@ class UploadWorkflow {
             // Step 1: Ensure server is running
             await this.ensureServerRunning();
             
-            // Step 2: Clean up any existing batch files for fresh start
-            await this.cleanupPreviousBatchFiles();
-            
-            // Step 3: Initialize browser automation
+            // Step 2: Initialize browser automation
             await this.initializeBrowserAutomation();
             
-            // Step 4: Discover and batch files
+            // Step 3: Discover and batch files
             await this.prepareFilesForProcessing(directoryPath, options);
             
-            // Step 5: Execute batch processing workflow
+            // Step 4: Execute batch processing workflow
             await this.executeBatchProcessing(options);
             
-            // Step 6: Generate final report
+            // Step 5: Generate final report
             this.generateWorkflowReport();
             
             this.workflowStats.endTime = new Date();
@@ -94,34 +91,7 @@ class UploadWorkflow {
         }
     }
     
-    async cleanupPreviousBatchFiles() {
-        this.spinner = ora('Cleaning up previous batch files for fresh start...').start();
-        
-        try {
-            const batchDir = path.join(process.cwd(), 'automation', 'csv_exports', 'batch_csvs');
-            
-            // Check if batch directory exists
-            if (await fs.pathExists(batchDir)) {
-                const files = await fs.readdir(batchDir);
-                const batchFiles = files.filter(file => file.startsWith('batch_') && file.endsWith('.csv'));
-                
-                if (batchFiles.length > 0) {
-                    // Remove all batch files
-                    for (const file of batchFiles) {
-                        await fs.remove(path.join(batchDir, file));
-                    }
-                    this.spinner.succeed(`Cleaned up ${batchFiles.length} previous batch files`);
-                } else {
-                    this.spinner.succeed('No previous batch files to clean up');
-                }
-            } else {
-                this.spinner.succeed('Batch directory doesn\'t exist yet - clean start');
-            }
-        } catch (error) {
-            this.spinner.warn(`Could not clean up batch files: ${error.message}`);
-            // Don't fail the workflow for cleanup issues
-        }
-    }
+
 
     async initializeBrowserAutomation() {
         this.spinner = ora('Initializing browser automation...').start();
