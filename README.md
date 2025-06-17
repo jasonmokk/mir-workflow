@@ -32,9 +32,6 @@ Transform your entire music collection into detailed analytical data with a sing
    ├── data/
    │   ├── song1.mp3
    │   ├── song2.wav
-   │   ├── album_folder/
-   │   │   ├── track1.mp3
-   │   │   └── track2.flac
    │   └── more_music...
    └── run-analysis.js
    ```
