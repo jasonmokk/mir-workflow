@@ -75,7 +75,7 @@ The final CSV file is saved in the `results` directory with numbered filenames (
 npm start
 ```
 
-### Start Server Only (for manual analysis)
+### Start Website Only (for manual analysis)
 ```bash
 npm run server
 ```
