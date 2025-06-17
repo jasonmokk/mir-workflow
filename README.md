@@ -175,14 +175,6 @@ Each analysis run creates a completely separate result file - no carryover from 
 
 ---
 
-## 📋 System Requirements
-
-### Minimum Requirements:
-- **OS**: Windows 10, macOS 10.15, or Linux Ubuntu 18.04+
-- **RAM**: 4GB (8GB recommended for large collections)
-- **Storage**: 3GB free space (for browsers and processing)
-- **Internet**: Required for initial setup only
-
 ### Supported Audio Formats:
 - **MP3** - Most common, fastest processing
 - **WAV** - Uncompressed, high quality
@@ -191,33 +183,7 @@ Each analysis run creates a completely separate result file - no carryover from 
 - **M4A** - Apple format
 - **AAC** - Advanced audio codec
 
----
 
-## 🤝 Getting Help
-
-### If You're Stuck:
-1. **Check the logs**: Look in `automation/logs/` for detailed error messages
-2. **Try fewer files**: Start with 5-10 files to test the system
-3. **Check requirements**: Ensure Node.js 16+ is installed
-4. **File formats**: Verify your audio files are in supported formats
-5. **Restart**: Sometimes a simple restart resolves issues
-
-### Error Logs Location:
-- **Processing logs**: `automation/logs/`
-- **Browser logs**: Printed to the console during analysis
-
----
-
-## 🎯 Academic Research Use
-
-This tool is designed for academic research and analysis. The generated CSV data can be used for:
-
-- **Music recommendation systems**
-- **Audio similarity analysis**  
-- **Mood-based playlist generation**
-- **Music therapy research**
-- **Audio content analysis**
-- **Machine learning dataset creation**
 
 ### Citation:
 If you use this tool in academic work, please cite the underlying Essentia.js library:
@@ -260,5 +226,3 @@ Music Technology Group (MTG), Universitat Pompeu Fabra. Essentia.js: Real-time m
 MIT License - Feel free to use for academic and research purposes.
 
 ---
-
-**🎵 Happy analyzing! Transform your music collection into data today! 🎵**
