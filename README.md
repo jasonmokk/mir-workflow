@@ -100,9 +100,8 @@ npm run help
 
 ### ❌ "Browser launch failed"
 **Solution**: 
-- The tool will automatically install browser dependencies
-- On first run, wait for Playwright to download browsers (this may take a few minutes)
-- Ensure you have sufficient disk space (2-3 GB for browsers)
+- The tool uses Playwright chromium
+- Run `npx playwright install` or `npx playwright@1.52.0`
 
 ### ❌ Analysis stops or hangs
 **Solution**:
