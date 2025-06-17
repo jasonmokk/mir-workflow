@@ -173,6 +173,8 @@ npm run server
 ### Clean Run Every Time
 Each analysis run creates a completely separate result file - no carryover from previous runs. Perfect for analyzing different music collections independently.
 
+You can check `automation/logs` for detailed log reports of each workflow run.
+
 ---
 
 ### Supported Audio Formats:
