@@ -13,3 +13,6 @@ results/*
 
 csv_exports/*
 !csv_exports/.gitkeep
+
+automation/csv_exports/*
+!automation/csv_exports/.gitkeep
