@@ -561,7 +561,7 @@ program
     .command('upload')
     .description('Execute automated upload workflow with enhanced browser automation')
     .argument('<directory>', 'Directory containing audio files to upload and process')
-    .option('-b, --batch-size <size>', 'Number of files per batch', '25')
+    .option('-b, --batch-size <size>', 'Number of files per batch', '30')
     .option('-s, --strict', 'Stop processing on first batch failure')
     .option('--resume', 'Resume from previous processing state')
     .option('--clear-state', 'Clear previous processing state before starting')

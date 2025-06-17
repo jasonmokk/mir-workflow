@@ -29,7 +29,7 @@
     "memoryCheckInterval": 30000
   },
   "batchProcessing": {
-    "batchSize": 50,
+    "batchSize": 30,
     "maxRetries": 3,
     "retryDelay": 1000,
     "delayBetweenBatches": 5000,
@@ -43,7 +43,7 @@
     "clearStateBeforeUpload": true,
     "monitorUploadProgress": true,
     "maxFileSize": 104857600,
-    "maxFilesPerBatch": 50,
+    "maxFilesPerBatch": 30,
     "uploadProgressTimeout": 60000,
     "retryFailedUploads": true,
     "saveUploadLogs": false

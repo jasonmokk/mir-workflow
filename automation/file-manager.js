@@ -17,7 +17,7 @@ class FileManager {
             ],
             minFileSize: 1024, // 1KB minimum
             maxFileSize: 104857600, // 100MB maximum
-            batchSize: 25,
+            batchSize: 30,
             enableProgressTracking: true,
             resumeFromFailure: true,
             ...config

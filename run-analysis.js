@@ -69,7 +69,7 @@ async function runAnalysis() {
         
         // Run the upload workflow with optimized settings
         await processor.executeUploadWorkflow(dataDir, {
-            batchSize: 50, // Larger batches for efficiency
+            batchSize: 30, // Smaller batches for better stability
             strict: false  // Continue on errors
         });
         

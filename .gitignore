@@ -14,5 +14,14 @@ results/*
 csv_exports/*
 !csv_exports/.gitkeep
 
+csv_exports/batch_csvs/*
+!csv_exports/batch_csvs/.gitkeep
+
 automation/csv_exports/*
 !automation/csv_exports/.gitkeep
+
+Implementation_Plan.md
+
+Memory/*
+
+/Users/jasonmok/Desktop/mir-workflow/agentic-project-management/*

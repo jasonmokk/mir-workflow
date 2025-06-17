@@ -643,7 +643,8 @@ class UploadWorkflow {
         // Current batch status
         const currentBatch = this.fileManager.processingState.currentBatch;
         if (currentBatch > 0) {
-            console.log(chalk.yellow(`🔄 Currently processing: Batch ${currentBatch} (25 songs)`));
+            const currentBatchFiles = this.fileManager.processingState.currentBatchFiles.length;
+            console.log(chalk.yellow(`🔄 Currently processing: Batch ${currentBatch} (${currentBatchFiles} songs)`));
         }
         
         console.log('');
