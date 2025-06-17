@@ -101,7 +101,7 @@ npm run help
 ### ❌ "Browser launch failed"
 **Solution**: 
 - The tool uses Playwright chromium
-- Run `npx playwright install` or `npx playwright@1.52.0`
+- Run `npx playwright install` or `npx playwright@1.52.0 install`
 
 ### ❌ Analysis stops or hangs
 **Solution**:
@@ -113,7 +113,7 @@ npm run help
 ### ❌ "Port already in use"
 **Solution**: 
 - The tool automatically finds available ports
-- If issues persist, restart your computer
+- Close all terminal tabs and run the analysis again
 
 ### ❌ Permission errors
 **Solution**:
