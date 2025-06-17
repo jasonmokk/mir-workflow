@@ -219,6 +219,42 @@ Music Technology Group (MTG), Universitat Pompeu Fabra. Essentia.js: Real-time m
 - Optimized batch sizes for throughput
 - Browser automation with error recovery
 
+### Underlying Models and Analysis
+
+This project uses Essentia.js, a powerful audio analysis library, combined with pre-trained deep learning models for music analysis. The system employs several specialized models:
+
+#### Core Models
+- **MusiCNN Architecture**: Based on the Musicnn deep learning model for music analysis
+- **MSD-2 Dataset**: Models trained on the Million Song Dataset (MSD-2)
+
+#### Analysis Features
+1. **Mood Analysis**
+   - Happy/Sad detection
+   - Aggressive/Relaxed classification
+   - Mood intensity scoring
+
+2. **Rhythm Analysis**
+   - BPM (Beats Per Minute) detection
+   - Rhythm patterns
+   - Danceability scoring
+
+3. **Musical Features**
+   - Key detection
+   - Scale analysis
+   - Musical structure
+
+#### Technical Implementation
+- Uses Essentia.js for audio processing and feature extraction
+- Implements TensorFlow.js for model inference
+- Processes audio in real-time using WebAssembly
+- Supports batch processing of multiple files
+
+#### Model Architecture
+The system uses a combination of:
+- **MusiCNN**: Deep convolutional neural network for music analysis
+- **Essentia Algorithms**: For low-level audio feature extraction
+- **TensorFlow.js**: For model inference in the browser
+
 </details>
 
 ---
