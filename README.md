@@ -33,6 +33,7 @@ Transform your entire music collection into detailed analytical data with a sing
 3. **Install dependencies**
    ```bash
    npm install
+   npx playwright@1.52.0 install
    ```
 
 4. **Add your audio files**
