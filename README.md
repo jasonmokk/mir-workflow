@@ -19,13 +19,17 @@ Transform your entire music collection into detailed analytical data with a sing
    git clone https://github.com/jasonmokk/mir-workflow.git
    cd mir-workflow
    ```
+   **Or if already cloned, pull any recent changes**
+   ```bash
+   git pull
+   ```
 
-2. **Install dependencies**
+3. **Install dependencies**
    ```bash
    npm install
    ```
 
-3. **Add your audio files**
+4. **Add your audio files**
    - Copy your audio files into the existing `data` folder
    ```
    mir-workflow/
@@ -36,7 +40,7 @@ Transform your entire music collection into detailed analytical data with a sing
    └── run-analysis.js
    ```
 
-4. **Run the analysis**
+5. **Run the analysis**
    ```bash
    npm start
    ```
