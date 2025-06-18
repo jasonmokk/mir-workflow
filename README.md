@@ -25,7 +25,7 @@ Transform your entire music collection into detailed analytical data with a sing
    git clone https://github.com/jasonmokk/mir-workflow.git
    cd mir-workflow
    ```
-   **Or if already cloned, cd into the path pull any recent changes**
+   **Or if already cloned, cd into the path and pull any recent changes**
    ```bash
    git pull
    ```
