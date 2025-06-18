@@ -43,8 +43,7 @@ Transform your entire music collection into detailed analytical data with a sing
    ├── data/
    │   ├── song1.mp3
    │   ├── song2.wav
-   │   └── more_music...
-   └── run-analysis.js
+   │   └── song3.mp3
    ```
 
 5. **Run the analysis**
