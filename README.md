@@ -11,7 +11,12 @@ Transform your entire music collection into detailed analytical data with a sing
 ### Prerequisites
 - **Node.js 16+** ([Download here](https://nodejs.org/))
 - **Audio files** in common formats (MP3, WAV, FLAC, OGG, M4A, AAC)
-- **For Dr. Kang**
+- **For Dr. Kang: Run the below command to ensure your macbook always uses the correct Node path**
+  ```
+  echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.zshrc
+  source ~/.zshrc
+  ```
+
 
 ### Installation & Setup
 
