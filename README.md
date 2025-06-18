@@ -11,6 +11,7 @@ Transform your entire music collection into detailed analytical data with a sing
 ### Prerequisites
 - **Node.js 16+** ([Download here](https://nodejs.org/))
 - **Audio files** in common formats (MP3, WAV, FLAC, OGG, M4A, AAC)
+- **For Dr. Kang**
 
 ### Installation & Setup
 
