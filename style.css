@@ -336,3 +336,40 @@ footer#links {
     background-color: #e9ecef;
     padding-left: 1rem;
 }
+
+/* Genre predictions styles */
+.genre-predictions {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+    font-size: 0.9em;
+}
+
+.genre-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 3px 0;
+    padding: 2px 5px;
+}
+
+.genre-item span {
+    font-weight: bold;
+    color: #F7AF39;
+}
+
+.prediction-item {
+    margin: 10px 0;
+}
+
+.prediction-label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.prediction-value {
+    background-color: rgba(247, 175, 57, 0.2);
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-weight: bold;
+}

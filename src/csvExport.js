@@ -6,12 +6,28 @@
 /**
  * CSV column schema definition
  */
-const CSV_SCHEMA = {
-    columns: [
-        'Filename', 'BPM', 'Key', 'Happy', 'Sad', 'Relaxed', 'Aggressive', 'Danceability'
-    ],
-    header: '"Filename","BPM","Key","Happy","Sad","Relaxed","Aggressive","Danceability"'
-};
+const CSV_SCHEMA = [
+    'filename',
+    'bpm',
+    'key',
+    'mood_happy',
+    'mood_sad',
+    'mood_relaxed',
+    'mood_aggressive',
+    'mood_electronic',
+    'mood_acoustic',
+    'mood_party',
+    'genre_alternative',
+    'genre_blues',
+    'genre_electronic_genre',
+    'genre_folkcountry',
+    'genre_funksoulrnb',
+    'genre_jazz',
+    'genre_pop',
+    'genre_raphiphop',
+    'genre_rock',
+    'danceability'
+];
 
 /**
  * Formats a key object from Essentia analysis into readable string format
@@ -148,12 +164,19 @@ function validateTrackData(track, index) {
     if (!track.predictions) {
         warnings.push(`Track ${index}: Missing predictions data`);
     } else {
-        const requiredMoods = ['mood_happy', 'mood_sad', 'mood_relaxed', 'mood_aggressive', 'danceability'];
+        const requiredMoods = ['mood_happy', 'mood_sad', 'mood_relaxed', 'mood_aggressive', 'mood_electronic', 'mood_acoustic', 'mood_party', 'danceability'];
         requiredMoods.forEach(mood => {
             if (!(mood in track.predictions)) {
                 warnings.push(`Track ${index}: Missing ${mood} prediction`);
             }
         });
+        
+        // Check for genre predictions
+        if (!track.predictions.genre_dortmund) {
+            warnings.push(`Track ${index}: Missing genre_dortmund predictions`);
+        } else if (typeof track.predictions.genre_dortmund !== 'object') {
+            warnings.push(`Track ${index}: genre_dortmund should be an object with genre probabilities`);
+        }
     }
     
     if (!track.essentia) {
@@ -203,7 +226,22 @@ function processTrackToCSVRow(track, index) {
         const sad = formatMoodValue(track.predictions?.mood_sad);
         const relaxed = formatMoodValue(track.predictions?.mood_relaxed);
         const aggressive = formatMoodValue(track.predictions?.mood_aggressive);
+        const electronic = formatMoodValue(track.predictions?.mood_electronic);
+        const acoustic = formatMoodValue(track.predictions?.mood_acoustic);
+        const party = formatMoodValue(track.predictions?.mood_party);
         const danceability = formatMoodValue(track.predictions?.danceability);
+        
+        // Extract genre predictions
+        const genreData = track.predictions?.genre_dortmund || {};
+        const genreAlternative = formatMoodValue(genreData.alternative);
+        const genreBlues = formatMoodValue(genreData.blues);
+        const genreElectronicGenre = formatMoodValue(genreData.electronic);
+        const genreFolkcountry = formatMoodValue(genreData.folkcountry);
+        const genreFunksoulrnb = formatMoodValue(genreData.funksoulrnb);
+        const genreJazz = formatMoodValue(genreData.jazz);
+        const genrePop = formatMoodValue(genreData.pop);
+        const genreRaphiphop = formatMoodValue(genreData.raphiphop);
+        const genreRock = formatMoodValue(genreData.rock);
         
         // Create CSV row with proper escaping
         const row = [
@@ -214,6 +252,18 @@ function processTrackToCSVRow(track, index) {
             escapeCSVField(sad),
             escapeCSVField(relaxed),
             escapeCSVField(aggressive),
+            escapeCSVField(electronic),
+            escapeCSVField(acoustic),
+            escapeCSVField(party),
+            escapeCSVField(genreAlternative),
+            escapeCSVField(genreBlues),
+            escapeCSVField(genreElectronicGenre),
+            escapeCSVField(genreFolkcountry),
+            escapeCSVField(genreFunksoulrnb),
+            escapeCSVField(genreJazz),
+            escapeCSVField(genrePop),
+            escapeCSVField(genreRaphiphop),
+            escapeCSVField(genreRock),
             escapeCSVField(danceability)
         ].join(',');
         
@@ -244,9 +294,10 @@ export function generateCSV(analysedTracks) {
     
     if (analysedTracks.length === 0) {
         console.warn('No tracks to export');
+        const csvHeader = CSV_SCHEMA.map(column => escapeCSVField(column)).join(',');
         return {
             success: true,
-            csvContent: CSV_SCHEMA.header + '\n',
+            csvContent: csvHeader + '\n',
             statistics: {
                 totalTracks: 0,
                 processedTracks: 0,
@@ -265,7 +316,8 @@ export function generateCSV(analysedTracks) {
     };
     
     // Start with header row
-    const csvRows = [CSV_SCHEMA.header];
+    const csvHeader = CSV_SCHEMA.map(column => escapeCSVField(column)).join(',');
+    const csvRows = [csvHeader];
     
     // Process each track
     analysedTracks.forEach((track, index) => {

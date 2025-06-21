@@ -68,7 +68,7 @@ async function runAnalysis() {
         console.log('');
         
         // Run the upload workflow with optimized settings
-        await processor.executeUploadWorkflow(dataDir, {
+        const workflowResult = await processor.executeUploadWorkflow(dataDir, {
             batchSize: 30, // Smaller batches for better stability
             strict: false  // Continue on errors
         });
@@ -76,7 +76,10 @@ async function runAnalysis() {
         console.log(chalk.green.bold('\n✅ Analysis Complete!'));
         console.log(chalk.blue('📊 Results available in:'));
         console.log(chalk.gray(`   • Individual batches: ./automation/csv_exports/batch_csvs/`));
-        console.log(chalk.gray(`   • Final results: ./results/music_analysis_results_01.csv`));
+        
+        // Use actual filename from merge result
+        const finalFilename = workflowResult?.mergeResult?.filename || 'music_analysis_results_01.csv';
+        console.log(chalk.gray(`   • Final results: ./results/${finalFilename}`));
         console.log('');
         console.log(chalk.blue('💡 The final results file in the "results" directory contains all analysis results for your music collection.'));
         

@@ -11,6 +11,10 @@ const modelTagOrder = {
     'mood_sad': [false, true],
     'mood_relaxed': [false, true],
     'mood_aggressive': [true, false],
+    'mood_electronic': [true, false],
+    'mood_acoustic': [true, false],
+    'mood_party': [false, true],
+    'genre_dortmund': 'multi_class',
     'danceability': [true, false]
 };
 
@@ -27,6 +31,10 @@ function initModel() {
 }
 
 function getModelURL() {
+    // Handle different model naming conventions
+    if (modelName === 'mood_acoustic' || modelName === 'mood_party') {
+        return `../models/${modelName}-musicnn-mtt-2/model.json`;
+    }
     return `../models/${modelName}-musicnn-msd-2/model.json`;
 }
 
@@ -96,9 +104,41 @@ function modelPredict(features) {
         const inferenceStart = Date.now();
 
         model.predict(features, true).then((predictions) => {
-            const summarizedPredictions = twoValuesAverage(predictions);
-            // format predictions, grab only positive one
-            const results = summarizedPredictions.filter((_, i) => modelTagOrder[modelName][i])[0];
+            let results;
+            
+            if (modelName === 'genre_dortmund') {
+                // Handle multi-class genre classification
+                // predictions is an array of prediction arrays for each time segment
+                // Average across all segments to get final genre probabilities
+                const genreLabels = ['alternative', 'blues', 'electronic', 'folkcountry', 'funksoulrnb', 'jazz', 'pop', 'raphiphop', 'rock'];
+                
+                // Average predictions across all time segments
+                const numSegments = predictions.length;
+                const numGenres = predictions[0].length;
+                const avgPredictions = new Array(numGenres).fill(0);
+                
+                for (let i = 0; i < numSegments; i++) {
+                    for (let j = 0; j < numGenres; j++) {
+                        avgPredictions[j] += predictions[i][j];
+                    }
+                }
+                
+                // Normalize by number of segments
+                for (let j = 0; j < numGenres; j++) {
+                    avgPredictions[j] /= numSegments;
+                }
+                
+                // Create genre results object
+                results = {};
+                genreLabels.forEach((label, index) => {
+                    results[label] = avgPredictions[index];
+                });
+                
+            } else {
+                // Handle binary mood classification
+                const summarizedPredictions = twoValuesAverage(predictions);
+                results = summarizedPredictions.filter((_, i) => modelTagOrder[modelName][i])[0];
+            }
 
             console.info(`${modelName}: Inference took: ${Date.now() - inferenceStart}`);
             // output to main thread

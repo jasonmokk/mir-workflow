@@ -11,7 +11,7 @@ let essentia = null;
 let essentiaAnalysis;
 let featureExtractionWorker = null;
 let inferenceWorkers = {};
-const modelNames = ['mood_happy' , 'mood_sad', 'mood_relaxed', 'mood_aggressive', 'danceability'];
+const modelNames = ['mood_happy' , 'mood_sad', 'mood_relaxed', 'mood_aggressive', 'mood_electronic', 'mood_acoustic', 'mood_party', 'genre_dortmund', 'danceability'];
 let inferenceResultPromises = [];
 
 const resultsViz = new AnalysisResults(modelNames);

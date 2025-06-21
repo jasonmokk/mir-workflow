@@ -15,8 +15,52 @@ class AnalysisResults {
 
     updateMeters(values) {
         this.names.forEach((n) => {
-            this.analysisMeters[n].style.setProperty('--meter-width', values[n]*100);
+            if (n === 'genre_dortmund' && typeof values[n] === 'object') {
+                // Handle multi-class genre predictions
+                this.updateGenrePredictions(values[n]);
+            } else {
+                // Handle binary mood predictions
+                this.analysisMeters[n].style.setProperty('--meter-width', values[n]*100);
+            }
         });
+    }
+
+    updateGenrePredictions(genreValues) {
+        // Update individual genre values
+        const genreLabels = ['alternative', 'blues', 'electronic', 'folkcountry', 'funksoulrnb', 'jazz', 'pop', 'raphiphop', 'rock'];
+        genreLabels.forEach(genre => {
+            const element = document.getElementById(`genre-${genre}`);
+            if (element && genreValues[genre] !== undefined) {
+                element.textContent = (genreValues[genre] * 100).toFixed(1) + '%';
+            }
+        });
+
+        // Show the detailed genre breakdown
+        const genrePredictions = document.getElementById('genre-predictions');
+        if (genrePredictions) {
+            genrePredictions.style.display = 'block';
+        }
+
+        // Update summary with top genre
+        const topGenre = this.getTopGenre(genreValues);
+        const summaryElement = document.getElementById('genre-dortmund-summary');
+        if (summaryElement && topGenre) {
+            summaryElement.textContent = `${topGenre.genre}: ${(topGenre.confidence * 100).toFixed(1)}%`;
+        }
+    }
+
+    getTopGenre(genreValues) {
+        let topGenre = null;
+        let maxConfidence = 0;
+        
+        for (const [genre, confidence] of Object.entries(genreValues)) {
+            if (confidence > maxConfidence) {
+                maxConfidence = confidence;
+                topGenre = genre;
+            }
+        }
+        
+        return topGenre ? { genre: topGenre, confidence: maxConfidence } : null;
     }
 
     updateValueBoxes(essentiaAnalysis) {
