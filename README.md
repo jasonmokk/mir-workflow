@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎵 MIR Audio Analysis Tool
+# MIR Audio Analysis Tool
 
 **Automated music information retrieval using deep learning models**
 
@@ -11,24 +11,24 @@
 
 Analyze your entire music collection for mood, tempo, key, and danceability with a single command.
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Usage](#-usage) • [Technical Details](#-technical-details)
+[Features](#features) • [Quick Start](#quick-start) • [Usage](#usage) • [Technical Details](#technical-details)
 
 </div>
 
 ---
 
-## ✨ Features
+## Features
 
-- 🎯 **One-command analysis** - Process entire music libraries automatically  
-- 🧠 **Deep learning models** - MusiCNN architecture trained on Million Song Dataset
-- 📊 **Comprehensive metrics** - Mood, danceability, BPM, and musical key detection
-- ⚡ **Batch processing** - Memory-optimized handling of large collections
-- 📁 **Multiple formats** - MP3, WAV, FLAC, OGG, M4A, AAC support
-- 🔄 **Error recovery** - Robust processing with detailed logging
+- **Automated batch processing** - Analyze entire music libraries with single command
+- **MusiCNN deep learning models** - Pre-trained on Million Song Dataset for music analysis  
+- **Multi-dimensional mood analysis** - Happy, sad, relaxed, aggressive classification
+- **Musical feature extraction** - BPM, key detection, and danceability scoring
+- **Multiple audio formats** - MP3, WAV, FLAC, OGG, M4A, AAC support
+- **Research-ready output** - Structured CSV data for statistical analysis
 
-## 🚀 Quick Start
+## Quick Start
 
-### Prerequisites
+### Requirements
 ```bash
 Node.js 16+ • Audio files in common formats
 ```
@@ -50,30 +50,30 @@ npm start
 
 **Results saved to:** `results/music_analysis_results_01.csv`
 
-## 📈 Analysis Output
+## Analysis Output
 
 | Feature | Description | Range |
 |---------|-------------|-------|
-| **Danceability** | How suitable for dancing | 0-100% |
-| **Happy** | Happiness/joy level | 0-100% |
-| **Sad** | Sadness intensity | 0-100% |
-| **Relaxed** | Calmness/relaxation | 0-100% |
-| **Aggressive** | Energy/aggression level | 0-100% |
-| **BPM** | Beats per minute | Numeric |
-| **Key** | Musical key signature | String |
+| **Danceability** | Rhythmic suitability for dancing | 0-100% |
+| **Happy** | Positive emotional valence | 0-100% |
+| **Sad** | Negative emotional valence | 0-100% |
+| **Relaxed** | Low-energy, calm characteristics | 0-100% |
+| **Aggressive** | High-energy, intense characteristics | 0-100% |
+| **BPM** | Beats per minute (tempo) | Numeric |
+| **Key** | Detected musical key | String |
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 mir-workflow/
-├── 📁 data/           # 🎵 Your audio files
-├── 📁 results/        # 📊 Analysis results (CSV)
-├── 📁 automation/     # ⚙️  Processing engine
-├── 📁 models/         # 🤖 Deep learning models
-└── 📄 run-analysis.js # 🚀 Main script
+├── data/           # Input audio files
+├── results/        # Analysis results (CSV)
+├── automation/     # Processing engine
+├── models/         # Pre-trained models
+└── run-analysis.js # Main script
 ```
 
-## ⚡ Performance
+## Performance
 
 | Collection Size | Processing Time |
 |----------------|-----------------|
@@ -81,9 +81,9 @@ mir-workflow/
 | 100-200 files | ~45 minutes |
 | 400+ files | 2-3 hours |
 
-> **💡 Tip:** MP3 files process fastest. Files over 100MB are automatically skipped.
+> **Note:** MP3 files process fastest. Files over 100MB are automatically skipped.
 
-## 🛠️ Advanced Usage
+## Advanced Usage
 
 ### Manual Mode
 ```bash
@@ -98,10 +98,10 @@ npm run server  # Web interface at http://localhost:3000
 | `Browser launch failed` | Run `npx playwright install` |
 | `Analysis hangs` | Try fewer files, remove corrupted files |
 
-## 🔬 Technical Details
+## Technical Details
 
 <details>
-<summary><strong>🏗️ Architecture</strong></summary>
+<summary><strong>Architecture</strong></summary>
 
 ### Stack
 - **Frontend:** Essentia.js + TensorFlow.js
@@ -109,7 +109,7 @@ npm run server  # Web interface at http://localhost:3000
 - **Processing:** WebAssembly + batch optimization
 - **Models:** MusiCNN (Million Song Dataset)
 
-### Pipeline
+### Processing Pipeline
 1. **Feature Extraction** → Essentia.js algorithms
 2. **Model Inference** → CNN-based classification
 3. **Key Detection** → Harmonic analysis  
@@ -119,23 +119,23 @@ npm run server  # Web interface at http://localhost:3000
 </details>
 
 <details>
-<summary><strong>🎯 Model Details</strong></summary>
+<summary><strong>Model Details</strong></summary>
 
 ### MusiCNN Models
 - **Training Data:** Million Song Dataset (MSD-2)
 - **Architecture:** Deep Convolutional Neural Network
 - **Inference:** Real-time via WebAssembly
-- **Features:** Multi-label mood and rhythm classification
+- **Output:** Multi-label mood and rhythm classification
 
-### Supported Analysis
-- Mood classification (4 dimensions)
+### Analysis Capabilities
+- 4-dimensional mood classification
 - Rhythmic pattern analysis  
 - Harmonic content analysis
 - Temporal feature extraction
 
 </details>
 
-## 📊 Output Format
+## Output Format
 
 ```csv
 filename,danceability,happy,sad,relaxed,aggressive,bpm,key
@@ -143,9 +143,9 @@ song1.mp3,85.2,72.1,12.3,45.6,23.8,128,C major
 song2.wav,67.4,34.2,67.8,78.9,8.1,95,A minor
 ```
 
-Each analysis creates numbered result files with no data carryover between runs.
+Each analysis run creates numbered result files with no data carryover between runs.
 
-## 📜 Citation
+## Citation
 
 For academic use:
 ```bibtex
@@ -157,11 +157,11 @@ For academic use:
 }
 ```
 
-## 🤝 Contributing
+## Contributing
 
 Contributions welcome! Please read our [contributing guidelines](CONTRIBUTING.md) first.
 
-## 📄 License
+## License
 
 [MIT License](LICENSE) - Free for academic and commercial use.
 
@@ -169,8 +169,6 @@ Contributions welcome! Please read our [contributing guidelines](CONTRIBUTING.md
 
 <div align="center">
 
-**Made with ❤️ for music researchers and enthusiasts**
-
-⭐ **Star this repo if it helped you!** ⭐
+**Built for music researchers and computational musicology**
 
 </div>
