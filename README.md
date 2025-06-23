@@ -9,31 +9,61 @@
 [![Playwright](https://img.shields.io/badge/Playwright-1.52.0-blue.svg)](https://playwright.dev/)
 [![TensorFlow.js](https://img.shields.io/badge/TensorFlow.js-3.5.0-orange.svg)](https://www.tensorflow.org/js)
 
-Analyze your entire music collection for mood, tempo, key, and danceability with a single command.
-
-[Features](#features) • [Quick Start](#quick-start) • [Usage](#usage) • [Technical Details](#technical-details)
-
 </div>
 
----
+## What is it?
 
-## Features
+MIR Audio Analysis Tool is a Python and JavaScript-based system that provides automated music information retrieval using pre-trained deep learning models. It is designed to make large-scale music analysis both easy and efficient for researchers in computational musicology, music psychology, and related fields. The tool processes entire music collections and extracts interpretable features including mood classifications, rhythmic characteristics, and harmonic content.
 
-- **Automated batch processing** - Analyze entire music libraries with single command
-- **MusiCNN deep learning models** - Pre-trained on Million Song Dataset for music analysis  
-- **Multi-dimensional mood analysis** - Happy, sad, relaxed, aggressive classification
-- **Musical feature extraction** - BPM, key detection, and danceability scoring
-- **Multiple audio formats** - MP3, WAV, FLAC, OGG, M4A, AAC support
-- **Research-ready output** - Structured CSV data for statistical analysis
+## Table of Contents
 
-## Quick Start
+- [Main Features](#main-features)
+- [Where to get it](#where-to-get-it)
+- [Dependencies](#dependencies)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Analysis Output](#analysis-output)
+- [Performance](#performance)
+- [Technical Implementation](#technical-implementation)
+- [Citation](#citation)
+- [Contributing](#contributing)
+- [License](#license)
 
-### Requirements
+## Main Features
+
+Here are the key capabilities of the MIR Audio Analysis Tool:
+
+- **Automated batch processing** of entire music collections with a single command
+- **Multi-dimensional mood analysis** using CNN-based models trained on the Million Song Dataset
+- **Musical feature extraction** including tempo (BPM), key detection, and danceability scoring
+- **Research-ready CSV output** for statistical analysis and data visualization
+- **Multiple audio format support** (MP3, WAV, FLAC, OGG, M4A, AAC)
+- **Memory-optimized processing** for handling large datasets efficiently
+- **Browser-based analysis engine** using Essentia.js and TensorFlow.js for reproducible results
+- **Robust error handling** and detailed logging for research validation
+
+## Where to get it
+
+The source code is currently hosted on GitHub at: https://github.com/jasonmokk/mir-workflow
+
 ```bash
-Node.js 16+ • Audio files in common formats
+git clone https://github.com/jasonmokk/mir-workflow.git
+cd mir-workflow
+npm install
 ```
 
-### Installation
+## Dependencies
+
+- **Node.js 16+** - JavaScript runtime for automation and server components
+- **Playwright** - Browser automation for analysis engine
+- **Essentia.js** - Audio analysis library and feature extraction
+- **TensorFlow.js** - Machine learning model inference
+- **Express.js** - Web server for analysis interface
+
+## Installation
+
+### From GitHub
+
 ```bash
 git clone https://github.com/jasonmokk/mir-workflow.git
 cd mir-workflow
@@ -41,19 +71,23 @@ npm install
 npx playwright@1.52.0 install
 ```
 
-### Usage
-```bash
-# 1. Add your music files to the data/ folder
-# 2. Run analysis
-npm start
-```
+## Quick Start
 
-**Results saved to:** `results/music_analysis_results_01.csv`
+1. **Add your audio files** to the `data/` directory
+2. **Run the analysis**:
+   ```bash
+   npm start
+   ```
+3. **Results** will be saved to `results/music_analysis_results_01.csv`
+
+The tool automatically processes all supported audio files in batches and generates a comprehensive CSV dataset ready for statistical analysis.
 
 ## Analysis Output
 
-| Feature | Description | Range |
-|---------|-------------|-------|
+The tool extracts the following features for each audio file:
+
+| Feature | Description | Output Range |
+|---------|-------------|--------------|
 | **Danceability** | Rhythmic suitability for dancing | 0-100% |
 | **Happy** | Positive emotional valence | 0-100% |
 | **Sad** | Negative emotional valence | 0-100% |
@@ -62,80 +96,7 @@ npm start
 | **BPM** | Beats per minute (tempo) | Numeric |
 | **Key** | Detected musical key | String |
 
-## Project Structure
-
-```
-mir-workflow/
-├── data/           # Input audio files
-├── results/        # Analysis results (CSV)
-├── automation/     # Processing engine
-├── models/         # Pre-trained models
-└── run-analysis.js # Main script
-```
-
-## Performance
-
-| Collection Size | Processing Time |
-|----------------|-----------------|
-| 10-50 files | ~10 minutes |
-| 100-200 files | ~45 minutes |
-| 400+ files | 2-3 hours |
-
-> **Note:** MP3 files process fastest. Files over 100MB are automatically skipped.
-
-## Advanced Usage
-
-### Manual Mode
-```bash
-npm run server  # Web interface at http://localhost:3000
-```
-
-### Troubleshooting
-| Issue | Solution |
-|-------|----------|
-| `Node.js not found` | Install from [nodejs.org](https://nodejs.org/) |
-| `No audio files found` | Add files to `data/` folder |
-| `Browser launch failed` | Run `npx playwright install` |
-| `Analysis hangs` | Try fewer files, remove corrupted files |
-
-## Technical Details
-
-<details>
-<summary><strong>Architecture</strong></summary>
-
-### Stack
-- **Frontend:** Essentia.js + TensorFlow.js
-- **Backend:** Express.js + Playwright automation  
-- **Processing:** WebAssembly + batch optimization
-- **Models:** MusiCNN (Million Song Dataset)
-
-### Processing Pipeline
-1. **Feature Extraction** → Essentia.js algorithms
-2. **Model Inference** → CNN-based classification
-3. **Key Detection** → Harmonic analysis  
-4. **BPM Extraction** → Beat tracking
-5. **CSV Export** → Structured data output
-
-</details>
-
-<details>
-<summary><strong>Model Details</strong></summary>
-
-### MusiCNN Models
-- **Training Data:** Million Song Dataset (MSD-2)
-- **Architecture:** Deep Convolutional Neural Network
-- **Inference:** Real-time via WebAssembly
-- **Output:** Multi-label mood and rhythm classification
-
-### Analysis Capabilities
-- 4-dimensional mood classification
-- Rhythmic pattern analysis  
-- Harmonic content analysis
-- Temporal feature extraction
-
-</details>
-
-## Output Format
+### Output Format
 
 ```csv
 filename,danceability,happy,sad,relaxed,aggressive,bpm,key
@@ -145,21 +106,84 @@ song2.wav,67.4,34.2,67.8,78.9,8.1,95,A minor
 
 Each analysis run creates numbered result files with no data carryover between runs.
 
+## Performance
+
+Processing time varies based on collection size and audio format:
+
+| Collection Size | Estimated Time |
+|----------------|---------------|
+| 10-50 files | 10-15 minutes |
+| 100-200 files | 45-60 minutes |
+| 400+ files | 2-3 hours |
+
+**Note:** MP3 files generally process fastest. Files larger than 100MB are automatically skipped.
+
+## Technical Implementation
+
+### Architecture
+
+- **Frontend**: Essentia.js web application with TensorFlow.js model inference
+- **Backend**: Express.js server with Playwright browser automation
+- **Processing**: WebAssembly-optimized batch processing with memory management
+- **Models**: MusiCNN architecture trained on Million Song Dataset (MSD-2)
+
+### Processing Pipeline
+
+1. **Audio Loading** - Batch file processing with format validation
+2. **Feature Extraction** - Essentia.js spectral and temporal analysis
+3. **Model Inference** - CNN-based classification for mood and rhythm
+4. **Harmonic Analysis** - Key detection using pitch class profiles
+5. **Beat Tracking** - BPM extraction through onset detection
+6. **Data Export** - Structured CSV output with validation
+
+### Model Details
+
+The analysis uses pre-trained MusiCNN models:
+- **Training Dataset**: Million Song Dataset (MSD-2)
+- **Architecture**: Deep Convolutional Neural Network optimized for music
+- **Inference**: Real-time processing via WebAssembly and TensorFlow.js
+- **Output**: Multi-label classification for mood and rhythm characteristics
+
+## Advanced Usage
+
+### Manual Analysis Mode
+
+Start the web interface for individual file analysis:
+```bash
+npm run server
+```
+Access at `http://localhost:3000`
+
+### Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| `Node.js not found` | Install Node.js 16+ from [nodejs.org](https://nodejs.org/) |
+| `No audio files found` | Add audio files to the `data/` directory |
+| `Browser launch failed` | Run `npx playwright install` |
+| `Analysis hangs` | Try with fewer files first, check for corrupted audio files |
+
 ## Citation
 
-For academic use:
+If you use this tool in academic research, please cite the underlying Essentia.js framework:
+
 ```bibtex
 @software{essentia_js,
   title={Essentia.js: Real-time music analysis in the browser},
   author={Music Technology Group (MTG)},
   organization={Universitat Pompeu Fabra},
-  url={https://essentia.upf.edu/}
+  url={https://essentia.upf.edu/},
+  year={2019}
 }
 ```
 
 ## Contributing
 
-Contributions welcome! Please read our [contributing guidelines](CONTRIBUTING.md) first.
+Contributions, bug reports, bug fixes, documentation improvements, enhancements, and ideas are welcome.
+
+A detailed overview of how to contribute can be found in the [contributing guide](CONTRIBUTING.md).
+
+If you are looking to start working with the MIR Audio Analysis Tool codebase, navigate to the GitHub "issues" tab and start looking through interesting issues marked with "good first issue" or "help wanted".
 
 ## License
 
