@@ -54,9 +54,10 @@ Results are automatically saved to `results/music_analysis_results_*.csv`.
 ## Main Features
 
 - **Automated batch processing** of entire music collections
-- **Multi-dimensional mood analysis** using CNN-based models trained on the Million Song Dataset
+- **Multi-dimensional mood analysis** using 8 distinct mood models (happy, sad, relaxed, aggressive, electronic, acoustic, party)
+- **Genre classification** with 9-category multi-class prediction (alternative, blues, electronic, folk/country, funk/soul/R&B, jazz, pop, rap/hip-hop, rock)
 - **Musical feature extraction** including tempo (BPM), key detection, and danceability scoring
-- **Research-ready CSV output** for statistical analysis and data visualization
+- **Research-ready CSV output** with 20+ analysis dimensions for statistical analysis and data visualization
 - **Multiple audio format support** (MP3, WAV, FLAC, OGG, M4A, AAC)
 - **Memory-optimized processing** for handling large datasets efficiently
 
@@ -68,20 +69,36 @@ This tool is designed for large-scale music analysis in academic research. It pr
 
 | Feature | Description | Output Range |
 |---|---|---|
-| **Danceability** | Rhythmic suitability for dancing | 0-100% |
-| **Happy** | Positive emotional valence | 0-100% |
-| **Sad** | Negative emotional valence | 0-100% |
-| **Relaxed** | Low-energy, calm characteristics | 0-100% |
-| **Aggressive** | High-energy, intense characteristics | 0-100% |
+| **Danceability** | Rhythmic suitability for dancing | 0-1.000 |
+| **Mood - Happy** | Positive emotional valence | 0-1.000 |
+| **Mood - Sad** | Negative emotional valence | 0-1.000 |
+| **Mood - Relaxed** | Low-energy, calm characteristics | 0-1.000 |
+| **Mood - Aggressive** | High-energy, intense characteristics | 0-1.000 |
+| **Mood - Electronic** | Electronic/synthetic music characteristics | 0-1.000 |
+| **Mood - Acoustic** | Acoustic/organic music characteristics | 0-1.000 |
+| **Mood - Party** | High-energy, celebratory characteristics | 0-1.000 |
+| **Genre Classification** | Multi-label genre probabilities (9 genres) | 0-1.000 each |
 | **BPM** | Beats per minute (tempo) | Numeric |
 | **Key** | Detected musical key | String |
+
+### Genre Categories
+The system classifies music into 9 genre categories using the Dortmund genre dataset:
+- **Alternative** - Alternative rock and indie music
+- **Blues** - Traditional and contemporary blues
+- **Electronic** - Electronic dance music and synthesized genres  
+- **Folk/Country** - Folk, country, and Americana
+- **Funk/Soul/R&B** - Funk, soul, and rhythm & blues
+- **Jazz** - Jazz and jazz fusion
+- **Pop** - Popular music and mainstream genres
+- **Rap/Hip-Hop** - Hip-hop, rap, and related genres
+- **Rock** - Rock music and subgenres
 
 ### Output Format
 
 ```csv
-filename,danceability,happy,sad,relaxed,aggressive,bpm,key
-song1.mp3,85.2,72.1,12.3,45.6,23.8,128,C major
-song2.wav,67.4,34.2,67.8,78.9,8.1,95,A minor
+filename,bpm,key,mood_happy,mood_sad,mood_relaxed,mood_aggressive,mood_electronic,mood_acoustic,mood_party,genre_alternative,genre_blues,genre_electronic_genre,genre_folkcountry,genre_funksoulrnb,genre_jazz,genre_pop,genre_raphiphop,genre_rock,danceability
+song1.mp3,128,C major,0.852,0.123,0.456,0.238,0.342,0.789,0.567,0.123,0.045,0.234,0.089,0.156,0.067,0.645,0.078,0.234,0.852
+song2.wav,95,A minor,0.342,0.678,0.789,0.081,0.156,0.823,0.234,0.089,0.123,0.067,0.456,0.234,0.178,0.345,0.045,0.567,0.674
 ```
 
 ## Performance
@@ -112,10 +129,11 @@ song2.wav,67.4,34.2,67.8,78.9,8.1,95,A minor
 
 ### Model Details
 The analysis uses pre-trained MusiCNN models:
-- **Training Dataset**: Million Song Dataset (MSD-2)
+- **Training Datasets**: Million Song Dataset (MSD-2) and MagnaTagATune Dataset (MTT-2)
 - **Architecture**: Deep Convolutional Neural Network optimized for music
+- **Model Count**: 9 specialized models for comprehensive analysis
 - **Inference**: Real-time processing via WebAssembly and TensorFlow.js
-- **Output**: Multi-label classification for mood and rhythm characteristics
+- **Output Types**: Binary mood classification, multi-class genre classification, tempo/key analysis, and danceability scoring
 
 ## Advanced Usage
 
