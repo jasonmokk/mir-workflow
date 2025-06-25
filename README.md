@@ -149,7 +149,7 @@ Access at `http://localhost:3000`
 |---|---|
 | `Node.js not found` | Install Node.js 16+ from [nodejs.org](https://nodejs.org/) |
 | `No audio files found` | Add audio files to the `data/` directory |
-| `Browser launch failed` | Run `npx playwright install` |
+| `Browser launch failed` | Run `npx playwright@1.52.0 install` |
 | `Analysis hangs` | Try with fewer files first, check for corrupted audio files |
 
 ## Citation
