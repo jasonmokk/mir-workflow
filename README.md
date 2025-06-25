@@ -160,8 +160,4 @@ A detailed overview of how to contribute can be found in the [contributing guide
 
 ---
 
-<div align="center">
 
-**Built for music researchers and computational musicology**
-
-</div>
