@@ -58,7 +58,7 @@ Results are automatically saved to `results/music_analysis_results_*.csv`.
 - **Genre classification** with 9-category multi-class prediction (alternative, blues, electronic, folk/country, funk/soul/R&B, jazz, pop, rap/hip-hop, rock)
 - **Musical feature extraction** including tempo (BPM), key detection, and danceability scoring
 - **Research-ready CSV output** with 20+ analysis dimensions for statistical analysis and data visualization
-- **Multiple audio format support** (MP3, WAV, FLAC, OGG, M4A, AAC)
+- **Audio format support** (MP3, WAV - other formats may have limited browser compatibility)
 - **Memory-optimized processing** for handling large datasets efficiently
 
 ## Overview
