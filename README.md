@@ -27,6 +27,12 @@
     ```
     git pull
     ```
+    ***Run this command to ensure terminal always uses the correct Node path**
+    ```
+    echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.zshrc
+    source ~/.zshrc
+    ```
+
 
 3.  **Install dependencies**
 
