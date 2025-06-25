@@ -39,7 +39,7 @@
     npm start
     ```
 
-Results are automatically saved to `results/music_analysis_results_01.csv`.
+Results are automatically saved to `results/music_analysis_results_*.csv`.
 
 ## Main Features
 
