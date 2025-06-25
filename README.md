@@ -23,15 +23,19 @@
     git clone https://github.com/jasonmokk/mir-workflow.git
     cd mir-workflow
     ```
+    **Or pull the most recent changes**
+    ```
+    git pull
+    ```
 
-2.  **Install dependencies**
+3.  **Install dependencies**
 
     ```bash
     npm install
     npx playwright@1.52.0 install
     ```
 
-3.  **Run the analysis**
+4.  **Run the analysis**
     -   Add your audio files to the `data/` directory.
     -   Start the process:
 
