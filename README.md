@@ -154,15 +154,29 @@ Access at `http://localhost:3000`
 
 ## Citation
 
-If you use this tool in academic research, please cite the underlying Essentia.js framework:
+If you use this tool in academic research, please cite the underlying MusiCNN models and Essentia.js framework:
 
 ```bibtex
-@software{essentia_js,
-  title={Essentia.js: Real-time music analysis in the browser},
-  author={Music Technology Group (MTG)},
-  organization={Universitat Pompeu Fabra},
-  url={https://essentia.upf.edu/},
+@inproceedings{pons2018end,
+  title={End-to-end learning for music audio tagging at scale},
+  author={Pons, Jordi and Nieto, Oriol and Prockup, Matthew and Schmidt, Erik and Ehmann, Andreas and Serra, Xavier},
+  booktitle={Proceedings of the 19th International Society for Music Information Retrieval Conference (ISMIR)},
+  year={2018},
+  pages={637--644}
+}
+
+@inproceedings{pons2019musicnn,
+  title={musicnn: Pre-trained convolutional neural networks for music audio tagging},
+  author={Pons, Jordi and Serra, Xavier},
+  booktitle={Extended Abstracts for the Late-Breaking Demo Session of the 20th International Society for Music Information Retrieval Conference (ISMIR)},
   year={2019}
+}
+
+@software{bogdanov2013essentia,
+  title={Essentia: an audio analysis library for music information retrieval},
+  author={Bogdanov, Dmitry and Wack, Nicolas and G{\'o}mez, Emilia and Gulati, Sankalp and Boyer, Herrera and Mayor, Oscar and Roma, Gerard and Salamon, Justin and Zapata, Jos{\'e} R and Serra, Xavier},
+  year={2013},
+  url={https://essentia.upf.edu/}
 }
 ```
 
