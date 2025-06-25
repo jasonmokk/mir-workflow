@@ -166,12 +166,6 @@ If you use this tool in academic research, please cite the underlying Essentia.j
 }
 ```
 
-## Contributing
-
-Contributions, bug reports, bug fixes, documentation improvements, enhancements, and ideas are welcome.
-
-A detailed overview of how to contribute can be found in the [contributing guide](CONTRIBUTING.md).
-
 ## License
 
 [MIT License](LICENSE) - Free for academic and commercial use.
